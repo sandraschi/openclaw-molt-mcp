@@ -1,0 +1,54 @@
+{
+  "examples": [
+    {
+      "description": "Check OpenClaw Gateway status",
+      "tool": "clawd_gateway",
+      "args": {
+        "operation": "status"
+      },
+      "expected": "success: true, message about Gateway reachable"
+    },
+    {
+      "description": "List active OpenClaw sessions",
+      "tool": "clawd_sessions",
+      "args": {
+        "operation": "list"
+      },
+      "expected": "success: true, data with sessions list"
+    },
+    {
+      "description": "Trigger wake on main session",
+      "tool": "clawd_agent",
+      "args": {
+        "operation": "wake",
+        "message": "Scheduled check-in via clawd-mcp"
+      },
+      "expected": "success: true, Wake triggered successfully"
+    },
+    {
+      "description": "List installed OpenClaw skills",
+      "tool": "clawd_skills",
+      "args": {
+        "operation": "list"
+      },
+      "expected": "success: true, data with skills array"
+    },
+    {
+      "description": "Read a skill's SKILL.md",
+      "tool": "clawd_skills",
+      "args": {
+        "operation": "read",
+        "skill_name": "moltbook"
+      },
+      "expected": "success: true, data with content (or not found)"
+    },
+    {
+      "description": "Run OpenClaw doctor",
+      "tool": "clawd_gateway",
+      "args": {
+        "operation": "doctor"
+      },
+      "expected": "success: true/false, data with stdout/stderr"
+    }
+  ]
+}
