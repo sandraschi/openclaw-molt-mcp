@@ -83,12 +83,42 @@ async def clawd_gateway(
                     "message": f"Doctor exited with code {proc.returncode}",
                     "data": {"stdout": out, "stderr": err},
                 }
-            except FileNotFoundError:
+            except FileNotFoundError as e:
+                logger.warning(
+                    "openclaw CLI not found: %s",
+                    settings.openclaw_path,
+                    extra={"tool": "clawd_gateway", "operation": "doctor", "error_type": "FileNotFoundError"},
+                )
                 return {
                     "success": False,
                     "message": f"openclaw CLI not found. Ensure '{settings.openclaw_path}' is on PATH.",
+                    "error": str(e),
+                }
+            except Exception as e:
+                logger.error(
+                    "clawd_gateway doctor subprocess failed: %s",
+                    e,
+                    extra={"tool": "clawd_gateway", "operation": "doctor", "error_type": type(e).__name__},
+                    exc_info=True,
+                )
+                return {
+                    "success": False,
+                    "message": f"Doctor subprocess failed: {e!s}",
+                    "error": str(e),
                 }
 
         return {"success": False, "message": f"Unknown operation: {operation}"}
+    except Exception as e:
+        logger.error(
+            "clawd_gateway failed: %s",
+            e,
+            extra={"tool": "clawd_gateway", "operation": operation, "error_type": type(e).__name__},
+            exc_info=True,
+        )
+        return {
+            "success": False,
+            "message": f"Gateway operation failed: {e!s}",
+            "error": str(e),
+        }
     finally:
         await client.close()

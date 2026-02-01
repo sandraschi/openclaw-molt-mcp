@@ -4,13 +4,14 @@ import logging
 import os
 import sys
 
+from clawd_mcp.config import Settings
+from clawd_mcp.logging_config import setup_logging
 from clawd_mcp.mcp_instance import mcp
-from clawd_mcp.tools import agent, gateway, moltbook, security, sessions, skills
+from clawd_mcp.tools import agent, channels, gateway, moltbook, routing, security, sessions, skills  # noqa: F401 -- register tools
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
+_settings = Settings()
+setup_logging(_settings)
+logger = logging.getLogger(__name__)
 
 # Tools register via @mcp.tool() on import
 
@@ -34,6 +35,11 @@ if os.environ.get("CLAWD_MOUNT_VBOX", "").lower() in ("1", "true", "yes"):
             name="vbox",
         )
         mcp.mount(vbox_proxy, namespace="vbox")
-        logging.getLogger(__name__).info("virtualization-mcp mounted at vbox_*")
+        logger.info("virtualization-mcp mounted at vbox_*", extra={"tool": "server", "operation": "mount"})
     except Exception as e:
-        logging.getLogger(__name__).warning("Could not mount virtualization-mcp: %s", e)
+        logger.warning(
+            "Could not mount virtualization-mcp: %s",
+            e,
+            exc_info=True,
+            extra={"tool": "server", "operation": "mount", "error_type": type(e).__name__},
+        )

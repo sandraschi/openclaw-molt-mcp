@@ -69,5 +69,17 @@ async def clawd_agent(
             "success": False,
             "message": f"Unknown operation: {operation}",
         }
+    except Exception as e:
+        logger.error(
+            "clawd_agent failed: %s",
+            e,
+            extra={"tool": "clawd_agent", "operation": operation, "error_type": type(e).__name__},
+            exc_info=True,
+        )
+        return {
+            "success": False,
+            "message": f"Agent operation failed: {e!s}",
+            "error": str(e),
+        }
     finally:
         await client.close()

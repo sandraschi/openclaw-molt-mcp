@@ -48,5 +48,17 @@ async def clawd_sessions(
             session_key=session_key,
         )
         return result
+    except Exception as e:
+        logger.error(
+            "clawd_sessions failed: %s",
+            e,
+            extra={"tool": "clawd_sessions", "operation": operation, "error_type": type(e).__name__},
+            exc_info=True,
+        )
+        return {
+            "success": False,
+            "message": f"Sessions operation failed: {e!s}",
+            "error": str(e),
+        }
     finally:
         await client.close()

@@ -50,6 +50,10 @@ async def clawd_moltbook(
     """
     settings = Settings()
     client = MoltbookClient(settings)
+    logger.info(
+        "clawd_moltbook invoked",
+        extra={"tool": "clawd_moltbook", "operation": operation},
+    )
 
     try:
         if operation == "status":
@@ -129,5 +133,17 @@ async def clawd_moltbook(
             }
 
         return {"success": False, "message": f"Unknown operation: {operation}"}
+    except Exception as e:
+        logger.error(
+            "clawd_moltbook failed: %s",
+            e,
+            extra={"tool": "clawd_moltbook", "operation": operation, "error_type": type(e).__name__},
+            exc_info=True,
+        )
+        return {
+            "success": False,
+            "message": f"Moltbook operation failed: {e!s}",
+            "error": str(e),
+        }
     finally:
         await client.close()

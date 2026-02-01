@@ -9,6 +9,7 @@ Dark-themed React + Tailwind dashboard for clawd-mcp.
 - **Tailwind CSS** 3.4
 - **React Router** 6
 - **Lucide React** (icons)
+- **mermaid** (^11) – Diagram page flowcharts
 - **class-variance-authority** + **clsx** + **tailwind-merge** (cn utility)
 
 ## Theme
@@ -32,9 +33,29 @@ webapp/
 │   ├── main.tsx
 │   ├── App.tsx
 │   ├── components/
-│   │   └── Layout.tsx
+│   │   ├── Layout.tsx
+│   │   ├── OpenClawInstallBanner.tsx
+│   │   ├── Sidebar.tsx
+│   │   ├── Topbar.tsx
+│   │   └── modals/ (HelpModal, LoggerModal, AuthModal)
+│   ├── context/
+│   │   └── LogContext.tsx
 │   ├── pages/
-│   │   └── Dashboard.tsx
+│   │   ├── Startpage.tsx
+│   │   ├── AI.tsx
+│   │   ├── Channels.tsx
+│   │   ├── Routes.tsx
+│   │   ├── Diagram.tsx
+│   │   ├── Statistics.tsx
+│   │   ├── Moltbook.tsx
+│   │   ├── Integrations.tsx
+│   │   ├── Clawnews.tsx
+│   │   ├── Skills.tsx
+│   │   ├── Security.tsx
+│   │   ├── StarterPage.tsx
+│   │   └── Settings.tsx
+│   ├── services/
+│   │   └── api.ts
 │   ├── styles/
 │   │   └── main.css
 │   └── utils/
@@ -43,7 +64,31 @@ webapp/
     └── favicon.svg
 ```
 
+**Webapp API** (repo root):
+
+```
+webapp_api/
+├── main.py          # FastAPI: /api/ask, /api/gateway/status, /api/skills, /api/clawnews,
+│                    # /api/ollama/*, /api/channels, /api/routing, /api/openclaw/status, /api/landing-page
+├── ollama_client.py
+├── landing_page_service.py   # Static landing-site generator (Ecosystem page, DEPLOY.md)
+├── landing_assets/           # styles.css, script.js for generated sites
+└── ollama_preprompt.txt
+```
+
 ## Run
+
+**1. Webapp API (optional, for Ask OpenClaw, AI/Ollama, Channels, Routes, Integrations, Clawnews):**
+
+From repo root:
+
+```powershell
+pip install -e ".[webapp-api]"
+$env:PYTHONPATH = "src"
+uvicorn webapp_api.main:app --reload --port 5181
+```
+
+**2. Webapp:**
 
 ```bash
 cd webapp
@@ -51,7 +96,28 @@ npm install
 npm run dev
 ```
 
-Port: **5180**
+Port: **5180**. Vite proxies `/api` to http://127.0.0.1:5181.
+
+**One-shot start (two windows):** From repo root run `.\scripts\start.ps1` (PowerShell) or `scripts\start.bat` (CMD). Scripts kill processes on ports 5181 and 5180, wait 2s, then start API and webapp in separate windows. Windows stay open on exit (PowerShell: Read-Host; CMD: pause) so errors are visible.
+
+## OpenClaw install banner
+
+On load, the webapp calls `GET /api/openclaw/status` (backend runs `openclaw --version` via subprocess). If the CLI is not installed and the user has not dismissed the banner (`localStorage` key `clawd-mcp-openclaw-install-dismissed`), **OpenClawInstallBanner** is shown above main content with install alternatives: naked (docs), Docker, VM (link to SECURITY.md). Dismiss hides it and sets the key.
+
+## Logger modal and log server
+
+The **Logger** button in the topbar opens a modal that shows:
+
+- **Client logs**: App init, unhandled errors, and fetch failures (from the webapp).
+- **Server logs**: MCP server log file (JSON lines) when a log server is running.
+
+To see MCP server logs in the modal:
+
+1. Run the MCP server at least once so it creates the log file (default: `~/.clawd-mcp/logs/clawd-mcp.log`).
+2. Start the log server: `python -m clawd_mcp.serve_logs` (default: http://127.0.0.1:8765).
+3. In the Logger modal, set the URL to `http://127.0.0.1:8765/api/logs` (or leave default) and click **Refresh**.
+
+Environment: `CLAWD_LOG_SERVER_PORT` (default 8765), `CLAWD_LOG_SERVER_HOST` (default 127.0.0.1). Webapp: `VITE_LOGS_API_URL` for default log API URL.
 
 ## Build
 
@@ -61,14 +127,56 @@ npm run build
 
 Output: `webapp/dist/`
 
-## Dashboard
+## Pages
 
-- Tool cards: clawd_agent, clawd_sessions, clawd_skills, clawd_gateway
-- Quick links: openclaw.ai, moltbook.com, docs.openclaw.ai, moltbook.com/heartbeat.md
+- **Startpage**: Tool cards, **Ask OpenClaw** (message input → Gateway `/hooks/wake`), quick links
+- **AI**: Ollama status, model list (pull/delete), quick prompt, shortcuts, chat (OpenClaw/Moltbook preprompt). Requires Ollama and webapp API.
+- **Channels**: List channels, get channel config, send message, get recent messages. Proxies to Gateway tool `channels`. Requires Gateway to expose channels tool.
+- **Routes**: View routing rules (channel → agent), update routing, test routing (dry-run), get session by channel. Proxies to Gateway tool `routing`; fallback: read from OpenClaw config.
+- **Diagram**: Mermaid diagrams – OpenClaw system, clawd-mcp and webapp connections, full system. Uses `mermaid` npm package.
+- **Statistics**: Current snapshot (Gateway, routing topology) and placeholder for time-series (MCP calls, agents sent to Moltbook). Backend `/api/stats` or log aggregation planned.
+- **Moltbook**: Prepare a Moltbook agent draft – name, bio, personality, goals, post ideas. Saved to localStorage; links to Moltbook docs and skill.
+- **Integrations**: Gateway status and installed skills (single source from OpenClaw; not duplication)
+- **Clawnews**: Today’s media echo – curated OpenClaw/Moltbook news and docs
+- **Starter page**: Generate static landing site (hero, features, bio, download, donate, how it works, Ecosystem). Form: project name, hero title (e.g. "India Claw"), subtitle, features, author, GitHub, donate. `POST /api/landing-page`; output in `LANDING_PAGE_OUTPUT_DIR` or `./generated/<slug>/www/`. Generated site includes Ecosystem page (OpenClaw, clawd-mcp, Moltbook, news, reviewers) and DEPLOY.md.
+- **Skills**, **Security**, **Settings**: Placeholders / TBD
 
-## Future
+## Ask OpenClaw
 
-- API proxy to clawd-mcp backend (if HTTP transport added)
-- Gateway status live view
-- Skills browser
-- Moltbook feed preview
+Uses the webapp API to proxy messages to OpenClaw Gateway. Same LLM OpenClaw uses (Ollama, Claude, etc.). Requires API and Gateway running.
+
+## AI (Ollama)
+
+The **AI** page proxies to local Ollama (default `http://localhost:11434`). Endpoints: `GET /api/ollama/health`, `GET /api/ollama/tags`, `POST /api/ollama/generate`, `POST /api/ollama/chat`, `POST /api/ollama/pull`, `DELETE /api/ollama/delete`. Chat uses system preprompt from `webapp_api/ollama_preprompt.txt`. Env: `OLLAMA_BASE` to override URL.
+
+## Channels and Routes
+
+- **Channels**: `POST /api/channels` with body `{ operation, channel?, to?, message?, limit?, session_key?, args? }`. Operations: `list_channels`, `get_channel_config`, `send_message`, `get_recent_messages`. Same as MCP tool `clawd_channels`.
+- **Routes**: `POST /api/routing` with body `{ operation, channel?, agent?, peer?, body?, session_key?, args? }`. Operations: `get_routing_rules`, `update_routing`, `test_routing`, `get_session_by_channel`. Same as MCP tool `clawd_routing`. `get_routing_rules` falls back to OpenClaw config when Gateway does not expose the routing tool.
+
+## Diagram, Statistics, Moltbook, Starter page
+
+- **Diagram**: Renders three Mermaid flowcharts (OpenClaw system; clawd-mcp and webapp; full system). Uses `mermaid` (^11). Theme: dark. No API calls.
+- **Statistics**: Fetches Gateway status and routing rules; shows current snapshot table and routing topology. Placeholder for time-series (MCP calls, agents sent to Moltbook) until `GET /api/stats` or log aggregation exists.
+- **Moltbook**: Prepare-agent form (name, bio, personality, goals, post ideas). Draft saved to `localStorage` key `clawd-mcp-moltbook-agent-draft`. Links to moltbook.com, skill.md, heartbeat.md.
+- **Starter page**: Form posts to `POST /api/landing-page`. Backend `webapp_api/landing_page_service.py` writes static site to `LANDING_PAGE_OUTPUT_DIR` (default `./generated/<slug>/www/`): index, how_it_works, ecosystem, download, donate, bio, styles.css, script.js, plus `DEPLOY.md` in parent. Ecosystem page: OpenClaw, clawd-mcp, Moltbook (descriptions + links), news/coverage, reviewers (Matthew Berman, Simon Willison, AI Explained). Adapted from meta-mcp `generate_landing_page`. Page shows "How to get online" (GitHub Pages, Netlify, Vercel, Cloudflare Pages).
+
+## Webapp API endpoints (summary)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | /api/health | API health |
+| POST | /api/ask | Send message to OpenClaw (Gateway /hooks/wake) |
+| GET | /api/gateway/status | Gateway reachability (sessions_list) |
+| GET | /api/skills | List workspace skills |
+| GET | /api/clawnews | Curated news items |
+| GET | /api/ollama/health | Ollama reachable |
+| GET | /api/ollama/tags | List Ollama models |
+| POST | /api/ollama/generate | One-off generate |
+| POST | /api/ollama/chat | Chat with history |
+| POST | /api/ollama/pull | Pull model |
+| DELETE | /api/ollama/delete | Delete model |
+| POST | /api/channels | Channels operations (list, config, send, recent) |
+| POST | /api/routing | Routing operations (rules, update, test, session) |
+| GET | /api/openclaw/status | OpenClaw CLI installed (openclaw --version); returns cli_installed, version |
+| POST | /api/landing-page | Generate static landing site (hero, features, ecosystem, DEPLOY.md); body: project_name, hero_title, hero_subtitle, features, github_url, author_name, author_bio, donate_link, hero_image_keyword |

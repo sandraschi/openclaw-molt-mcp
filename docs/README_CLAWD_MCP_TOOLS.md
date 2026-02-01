@@ -1,6 +1,8 @@
 # clawd-mcp Server and Tools
 
-**FastMCP 2.14+** MCP server exposing OpenClaw and (future) Moltbook operations to Cursor, Claude Desktop, and other MCP clients.
+**FastMCP 2.14+** MCP server exposing OpenClaw and Moltbook operations to Cursor, Claude Desktop, and other MCP clients.
+
+**Webapp parity**: The webapp dashboard mirrors many tools via the webapp API (Channels page → POST /api/channels; Routes page → POST /api/routing; Integrations → /api/gateway/status, /api/skills). See [README_WEBAPP.md](README_WEBAPP.md).
 
 ## Architecture
 
@@ -12,6 +14,8 @@ clawd-mcp (stdio)
     |
     +-- clawd_agent     -> OpenClaw Gateway (Tools Invoke, Webhooks)
     +-- clawd_sessions  -> OpenClaw Gateway (sessions_*)
+    +-- clawd_channels  -> OpenClaw Gateway (channels: list, config, send, recent)
+    +-- clawd_routing   -> OpenClaw Gateway (routing rules, update, test, session lookup)
     +-- clawd_skills    -> Local workspace + ClawHub
     +-- clawd_gateway   -> Gateway health + openclaw doctor
     +-- clawd_security  -> Audit, skill scan, hardening, provision_sandbox
@@ -60,6 +64,40 @@ Agent invocation and messaging.
 | `send_message` | Send message to agent; optionally deliver to channel | `POST /hooks/agent` — *pending* |
 
 **Parameters**: `operation`, `message`, `session_key`, `channel`, `to`, `deliver`, `thinking`, `timeout_seconds`
+
+---
+
+### clawd_channels
+
+OpenClaw channel visibility and messaging (WhatsApp, Telegram, Discord, Slack, etc.).
+
+| Operation | Description | Backend |
+|-----------|-------------|---------|
+| `list_channels` | Enumerate active channels and connection status | `POST /tools/invoke` tool: `channels` action: `list_channels` |
+| `get_channel_config` | Read channel settings (allowFrom, routing rules) | `POST /tools/invoke` tool: `channels` action: `get_channel_config` |
+| `send_message` | Route message to channel | `POST /tools/invoke` tool: `channels` action: `send_message` |
+| `get_recent_messages` | Pull last N messages from a channel | `POST /tools/invoke` tool: `channels` action: `get_recent_messages` |
+
+**Parameters**: `operation`, `channel`, `to`, `message`, `limit` (default 20), `session_key`, `args`
+
+**Note**: Requires Gateway to expose the `channels` tool. If not yet available, the call returns a clear error.
+
+---
+
+### clawd_routing
+
+Message routing topology (channels to agents).
+
+| Operation | Description | Backend |
+|-----------|-------------|---------|
+| `get_routing_rules` | List channel-to-agent mapping | `POST /tools/invoke` tool: `routing` action: `get_routing_rules`; fallback: read `~/.openclaw/openclaw.json` |
+| `update_routing` | Change channel-to-agent mappings (write; use with care) | `POST /tools/invoke` tool: `routing` action: `update_routing` |
+| `test_routing` | Simulate inbound message routing (dry-run) | `POST /tools/invoke` tool: `routing` action: `test_routing` |
+| `get_session_by_channel` | Find session from channel + peer | `POST /tools/invoke` tool: `routing` action: `get_session_by_channel` |
+
+**Parameters**: `operation`, `channel`, `agent`, `peer`, `body`, `session_key`, `args`
+
+**Fallback**: If the Gateway does not expose the routing tool, `get_routing_rules` may return data from OpenClaw config when present.
 
 ---
 

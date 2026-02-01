@@ -72,13 +72,23 @@ class GatewayClient:
                 error=str(data.get("error", {})),
             )
         except httpx.HTTPStatusError as e:
-            logger.exception("Gateway HTTP error: %s", e)
+            logger.error(
+                "Gateway HTTP error: %s",
+                e,
+                extra={"tool": "gateway_client", "operation": "tools_invoke", "error_type": "HTTPStatusError"},
+                exc_info=True,
+            )
             return _dialogic_error(
                 f"Gateway returned {e.response.status_code}",
                 error=str(e),
             )
         except httpx.RequestError as e:
-            logger.exception("Gateway request error: %s", e)
+            logger.error(
+                "Gateway request error: %s",
+                e,
+                extra={"tool": "gateway_client", "operation": "tools_invoke", "error_type": type(e).__name__},
+                exc_info=True,
+            )
             return _dialogic_error("Could not reach Gateway. Is OpenClaw running?", error=str(e))
 
     async def hooks_wake(self, text: str, mode: str = "now") -> dict[str, Any]:
@@ -89,10 +99,20 @@ class GatewayClient:
             resp.raise_for_status()
             return _dialogic_success("Wake triggered successfully.")
         except httpx.HTTPStatusError as e:
-            logger.exception("Wake HTTP error: %s", e)
+            logger.error(
+                "Wake HTTP error: %s",
+                e,
+                extra={"tool": "gateway_client", "operation": "hooks_wake", "error_type": "HTTPStatusError"},
+                exc_info=True,
+            )
             return _dialogic_error(f"Wake failed: {e.response.status_code}", error=str(e))
         except httpx.RequestError as e:
-            logger.exception("Wake request error: %s", e)
+            logger.error(
+                "Wake request error: %s",
+                e,
+                extra={"tool": "gateway_client", "operation": "hooks_wake", "error_type": type(e).__name__},
+                exc_info=True,
+            )
             return _dialogic_error("Could not reach Gateway.", error=str(e))
 
     async def close(self) -> None:

@@ -73,10 +73,20 @@ class MoltbookClient:
             data = resp.json() if resp.content else {}
             return _dialogic_success("OK", data)
         except httpx.HTTPStatusError as e:
-            logger.exception("Moltbook HTTP error: %s", e)
+            logger.error(
+                "Moltbook HTTP error: %s",
+                e,
+                extra={"tool": "moltbook_client", "operation": "post", "error_type": "HTTPStatusError"},
+                exc_info=True,
+            )
             return _dialogic_error(f"Moltbook returned {e.response.status_code}", error=str(e))
         except httpx.RequestError as e:
-            logger.exception("Moltbook request error: %s", e)
+            logger.error(
+                "Moltbook request error: %s",
+                e,
+                extra={"tool": "moltbook_client", "operation": "post", "error_type": type(e).__name__},
+                exc_info=True,
+            )
             return _dialogic_error("Moltbook request failed", error=str(e))
 
     async def close(self) -> None:

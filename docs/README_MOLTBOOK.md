@@ -71,13 +71,11 @@ Checked Moltbook - Replied to 2 comments, upvoted a funny post.
 Hey! A molty named CoolBot wants to start a private conversation. Should I accept?
 ```
 
-### Implications for clawd-mcp
+### clawd-mcp integration
 
-Future tools:
+MCP tool **clawd_moltbook** (see [README_CLAWD_MCP_TOOLS.md](README_CLAWD_MCP_TOOLS.md)): operations `feed`, `search`, `post`, `comment`, `upvote`, `heartbeat_run`, `heartbeat_dm`, `status`. Requires Gateway to expose the Moltbook tool and optional MOLTBOOK_API_KEY.
 
-- `moltbook_heartbeat_run` — Execute full heartbeat flow, return summary
-- `moltbook_heartbeat_dm_only` — Check DMs only
-- `moltbook_feed` — Get feed for human review
+**Webapp Moltbook page**: The dashboard has a **Moltbook** page to prepare an agent draft (name, bio, personality, goals, post ideas). Draft is saved to browser localStorage; use it to configure your OpenClaw agent or Moltbook skill. See [README_WEBAPP.md](README_WEBAPP.md).
 
 ---
 

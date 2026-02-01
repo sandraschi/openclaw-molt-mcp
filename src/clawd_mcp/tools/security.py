@@ -140,6 +140,12 @@ async def _audit(ctx: Context, settings: Settings) -> dict:
                 {"id": "gateway_reachable", "severity": "info", "title": "Gateway reachable"}
             )
     except Exception as e:
+        logger.error(
+            "clawd_security audit gateway check failed: %s",
+            e,
+            extra={"tool": "clawd_security", "operation": "audit", "error_type": type(e).__name__},
+            exc_info=True,
+        )
         findings.append(
             {"id": "gateway_error", "severity": "critical", "title": f"Gateway error: {e}"}
         )
@@ -253,6 +259,11 @@ async def _validate_config(ctx: Context, settings: Settings, base: Path) -> dict
             if not tools_cfg.get("allow") and not tools_cfg.get("safeBins"):
                 issues.append({"path": str(p), "issue": "No tools allow-list or safeBins"})
         except json.JSONDecodeError as e:
+            logger.warning(
+                "Invalid JSON in config: %s",
+                p,
+                extra={"tool": "clawd_security", "operation": "validate_config", "error_type": "JSONDecodeError"},
+            )
             issues.append({"path": str(p), "issue": f"Invalid JSON: {e}"})
     if not config_found:
         issues.append({"path": "none", "issue": "No clawdbot.json found in common locations"})

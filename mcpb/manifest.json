@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "clawd-mcp",
   "version": "0.1.0",
-  "description": "MCP server for OpenClaw/Moltbook ecosystem integration",
+  "description": "MCP server for OpenClaw/Moltbook ecosystem integration. Includes extensive prompt templates and examples.",
   "author": {
     "name": "Sandraschi",
     "email": "sandra@example.com"

@@ -39,3 +39,19 @@ class Settings(BaseSettings):
         default=None,
         description="OpenClaw workspace root (default: ~/.openclaw/workspace)",
     )
+    log_dir: Path = Field(
+        default_factory=lambda: Path.home() / ".clawd-mcp" / "logs",
+        description="Log directory. Set OPENCLAW_LOG_DIR to override.",
+    )
+    log_level: str = Field(
+        default="INFO",
+        description="Log level: DEBUG, INFO, WARNING, ERROR",
+    )
+    log_max_bytes: int = Field(
+        default=2 * 1024 * 1024,
+        description="Max bytes per log file (rotating)",
+    )
+    log_backup_count: int = Field(
+        default=3,
+        description="Number of backup log files to keep",
+    )

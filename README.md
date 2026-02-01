@@ -1,58 +1,62 @@
 # clawd-mcp
 
-**FastMCP 2.14+** server bridging Cursor and Claude Desktop with the **OpenClaw** (openclaw.ai) and **Moltbook** (moltbook.com) ecosystem.
+[![Status](https://img.shields.io/badge/status-alpha-orange)](https://github.com/sandraschi/clawd-mcp)
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-ecosystem-blue)](https://openclaw.ai)
+[![FastMCP](https://img.shields.io/badge/FastMCP-2.14+-blue)](https://github.com/jlowin/fastmcp)
+[![Python](https://img.shields.io/badge/Python-3.11+-green)](https://python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
+**MCP server + webapp** that bridge Cursor and Claude Desktop to **OpenClaw** and **Moltbook**. clawd-mcp *uses* those platforms (Gateway, APIs); it does not implement or replace them. Alpha.
 
-- **OpenClaw**: Personal AI assistant runtime; WhatsApp/Telegram/Discord gateway; Pi agent; bash, browser, cron
-- **Moltbook**: Social network for AI agents; posts, comments, DMs, submolts; semantic search; heartbeat pattern
-- **clawd-mcp**: MCP tools to invoke OpenClaw agents, manage sessions, skills, gateway; future Moltbook integration
+## What this repo is
 
-## Quick Start
+| Part | What it does |
+|------|----------------|
+| **MCP server** (stdio) | FastMCP 2.14+ tools: agent, sessions, channels, routing, skills, gateway, security, moltbook. For Cursor/Claude Desktop. |
+| **Webapp** (React + Vite + Tailwind) | Dashboard on port 5180: Startpage, AI (Ollama), Channels, Routes, Diagram, Statistics, Moltbook, Integrations, Clawnews, Skills, Security, **Starter page** (landing-site generator), Settings. |
+| **webapp_api** (FastAPI) | Backend on 5181: /api/ask, /api/gateway/status, /api/skills, /api/clawnews, /api/ollama/*, /api/channels, /api/routing, /api/openclaw/status, /api/landing-page. |
 
-```bash
-pip install -e ".[dev]"
-python -m clawd_mcp
-```
+One place to run agents, manage channels/routes/skills, and use Moltbook; OpenClaw and Moltbook stay separate.
 
-```bash
-cd webapp && npm install && npm run dev
-```
+## Install & run
 
-## Documentation
+See **[INSTALL.md](INSTALL.md)** for: pip + MCP only, webapp (API + frontend), one-shot scripts, config, logging, checks.
+
+## Repo layout
+
+- **src/clawd_mcp/** – MCP server and tools
+- **webapp/** – React dashboard (port 5180)
+- **webapp_api/** – FastAPI backend (port 5181)
+- **scripts/** – start.ps1, start.bat, check.ps1
+
+[Architecture](docs/ARCHITECTURE.md) – data flow, MCP vs API.
+
+## Docs
 
 | Doc | Description |
 |-----|-------------|
-| [Index](docs/README_INDEX.md) | Full documentation index |
-| [OpenClaw](docs/README_OPENCLAW.md) | OpenClaw platform, Gateway, channels, Pi agent, ClawHub |
-| [clawd-mcp Server & Tools](docs/README_CLAWD_MCP_TOOLS.md) | MCP server, portmanteau tools, dialogic returns |
-| [Webapp](docs/README_WEBAPP.md) | React + Tailwind dark dashboard |
-| [Moltbook](docs/README_MOLTBOOK.md) | Moltbook site, skills, agent heartbeats |
-| [Security Hardening](docs/SECURITY_HARDENING.md) | OpenClaw threats, hardening checklist, clawd_security |
+| [INSTALL.md](INSTALL.md) | Install, run, config, checks |
+| [docs/README_INDEX.md](docs/README_INDEX.md) | Doc index |
+| [docs/README_WEBAPP.md](docs/README_WEBAPP.md) | Webapp pages, API, Logger |
+| [docs/README_CLAWD_MCP_TOOLS.md](docs/README_CLAWD_MCP_TOOLS.md) | MCP tools |
+| [docs/README_OPENCLAW.md](docs/README_OPENCLAW.md) | OpenClaw (external) |
+| [docs/README_MOLTBOOK.md](docs/README_MOLTBOOK.md) | Moltbook (external) |
+| [SECURITY.md](SECURITY.md) | Threats, hardening |
 
 ## Security
 
-OpenClaw has major security risks (exposed creds, prompt injection, malicious skills). Use `clawd_security` for audit, skill scanning, config validation, and hardening recommendations. Optional `CLAWD_MOUNT_VBOX=1` mounts virtualization-mcp for VM-based sandbox provisioning. See [docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md) and [Auth0](https://auth0.com/blog/five-step-guide-securing-moltbot-ai-agent/), [Intruder](https://www.intruder.io/blog/clawdbot-when-easy-ai-becomes-a-security-nightmare).
+OpenClaw has major security risks. Use **clawd_security**; prefer VM and loopback. [SECURITY.md](SECURITY.md), [docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md).
 
-## Configuration
+## Repo manifests (LLM scrapers)
 
-| Variable | Default |
-|----------|---------|
-| `OPENCLAW_GATEWAY_URL` | `http://127.0.0.1:18789` |
-| `OPENCLAW_GATEWAY_TOKEN` | (required when auth enabled) |
-| `MOLTBOOK_API_KEY` | (optional) |
-| `CLAWD_MOUNT_VBOX` | `1` to mount virtualization-mcp at vbox_* (optional) |
+| File | Triggers | Purpose |
+|------|----------|---------|
+| **glama.json** | [Glama](https://glama.ai) GitHub scraper | MCP server listing: claim ownership, metadata, Docker, usage. Requires `$schema` + `maintainers` (GitHub usernames). Re-run claim flow on Glama after changes. |
+| **llms.txt** | [Gitingest](https://gitingest.com), [llmstxt.org](https://llmstxt.org) | LLM-friendly manifest: H1 + blockquote summary + ## sections with links. Improves repo ingestion for LLMs (e.g. `gitingest.com/sandraschi/clawd-mcp`). |
 
-## Checks
-
-```powershell
-.\scripts\check.ps1 -All   # ruff, mypy, pytest
-just check                 # same via just
-```
+Other scrapers: no extra files needed. Gitingest ingests the repo (replace `github.com` with `gitingest.com` in the repo URL); llms.txt gives it a curated entry point. Glama is the main MCP-directory scraper that uses glama.json; others (e.g. Cursor’s MCP discovery) may crawl GitHub without a manifest.
 
 ## References
 
-- [openclaw.ai](https://openclaw.ai)
-- [moltbook.com](https://moltbook.com)
-- [docs.openclaw.ai](https://docs.openclaw.ai)
-- [mcp-central-docs/integrations/openclaw-moltbook](https://github.com/sandraschi/mcp-central-docs/tree/main/integrations/openclaw-moltbook)
+- [openclaw.ai](https://openclaw.ai) · [moltbook.com](https://moltbook.com) · [docs.openclaw.ai](https://docs.openclaw.ai)
+- [mcp-central-docs/openclaw-moltbook](https://github.com/sandraschi/mcp-central-docs/tree/main/integrations/openclaw-moltbook)
