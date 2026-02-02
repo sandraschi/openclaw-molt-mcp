@@ -32,6 +32,8 @@ Add clawd-mcp to your MCP client config (stdio, cwd = cloned repo). See **MCP co
 
 Add this to your MCP client config file (inside the `mcpServers` object for Cursor/Claude Desktop, or equivalent). Replace `<REPO_ROOT>` with the absolute path to your cloned clawd-mcp repo (e.g. `D:/Dev/repos/clawd-mcp`). Use forward slashes in the path.
 
+Copy-paste: see **[snippets/mcp-config-clawd-mcp.json](snippets/mcp-config-clawd-mcp.json)** and [snippets/README.md](snippets/README.md). Pattern doc: [mcp-central-docs MCP client config snippets](https://github.com/sandraschi/mcp-central-docs/blob/main/docs/patterns/MCP_CLIENT_CONFIG_SNIPPETS.md).
+
 ```json
 "clawd-mcp": {
   "command": "python",

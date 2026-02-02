@@ -1,0 +1,10 @@
+{
+  "clawd-mcp": {
+    "command": "python",
+    "args": ["-m", "clawd_mcp"],
+    "env": {
+      "PYTHONPATH": "<REPO_ROOT>/src",
+      "PYTHONUNBUFFERED": "1"
+    }
+  }
+}

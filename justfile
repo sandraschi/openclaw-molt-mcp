@@ -21,3 +21,7 @@ test-cov:
 
 typecheck:
     mypy src
+
+# MCPB package: copy src into mcpb then pack (current standard). Output: dist/clawd-mcp-<version>.mcpb
+mcpb:
+    pwsh -NoProfile -File scripts/mcpb-build.ps1

@@ -27,7 +27,8 @@ One place to run agents, manage channels/routes/skills, and use Moltbook; OpenCl
 - **src/clawd_mcp/** – MCP server and tools
 - **webapp/** – React dashboard (port 5180)
 - **webapp_api/** – FastAPI backend (port 5181)
-- **scripts/** – install.ps1, install.bat, start.ps1, start.bat, check.ps1, serve_logs.ps1
+- **scripts/** – install.ps1, install.bat, start.ps1, start.bat, check.ps1, serve_logs.ps1, mcpb-build.ps1
+- **snippets/** – MCP config snippet (snippets/mcp-config-clawd-mcp.json); see [INSTALL.md](INSTALL.md) and [mcp-central-docs pattern](https://github.com/sandraschi/mcp-central-docs/blob/main/docs/patterns/MCP_CLIENT_CONFIG_SNIPPETS.md)
 
 [Architecture](docs/ARCHITECTURE.md) – data flow, MCP vs API.
 
@@ -35,6 +36,8 @@ One place to run agents, manage channels/routes/skills, and use Moltbook; OpenCl
 
 | Doc | Description |
 |-----|-------------|
+| [LICENSE](LICENSE) | MIT license |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [INSTALL.md](INSTALL.md) | Install, run, config, checks |
 | [docs/README_INDEX.md](docs/README_INDEX.md) | Doc index |
 | [docs/README_WEBAPP.md](docs/README_WEBAPP.md) | Webapp pages, API, Logger |

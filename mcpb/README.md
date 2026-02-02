@@ -2,35 +2,65 @@
 
 **FastMCP 2.14+** server for OpenClaw and Moltbook ecosystem integration.
 
-## Contents
+## Current MCPB packing standard
 
-The package includes **extensive prompt templates and examples** in `assets/prompts/`:
+- **Manifest v0.2** – `manifest.json` in this directory.
+- **Full source in package** – Package must include server source. Build copies repo `src/` into `mcpb/src/` before packing.
+- **No dependencies in package** – Runtime (e.g. Claude Desktop) installs dependencies; package is dependency-free.
+- **Output** – Built `.mcpb` goes in repo root `dist/`.
 
-- **system.md** - System prompt for clawd-mcp capabilities
-- **user.md** - User guide for tool usage
-- **quick-start.md** - Quick setup instructions
-- **configuration.md** - Environment variables and config
-- **troubleshooting.md** - Common issues and fixes
-- **examples.json** - Example tool invocations with expected outcomes
+## Directory layout (before pack)
 
-## Build
+```
+mcpb/
+  manifest.json       # v0.2 manifest, entry_point src/clawd_mcp/server.py
+  assets/
+    prompts/          # system.md, user.md, quick-start.md, configuration.md, troubleshooting.md, examples.json
+    icon.png          # optional 256x256 PNG
+  src/                # COPIED at build time from repo src/
+    clawd_mcp/        # server package
+```
+
+## Build (two steps)
+
+**Step 1 – Copy source into mcpb**
+
+Source must be present under `mcpb/src/` so the package contains full source. Copy from repo root:
 
 ```powershell
-# From repo root - pack mcpb/ to dist/
+# From repo root
+$mcpbSrc = "mcpb\src"
+if (Test-Path $mcpbSrc) { Remove-Item -Recurse -Force $mcpbSrc }
+New-Item -ItemType Directory -Force -Path $mcpbSrc | Out-Null
+Copy-Item -Path "src\clawd_mcp" -Destination "$mcpbSrc\clawd_mcp" -Recurse -Force
+```
+
+**Step 2 – Pack**
+
+```powershell
+# From repo root
 New-Item -ItemType Directory -Force -Path dist | Out-Null
 mcpb pack mcpb "dist/clawd-mcp-0.1.0.mcpb"
 ```
 
-Or from mcpb directory:
+Or use the script (does both steps):
 
 ```powershell
-mcpb pack . "../dist/clawd-mcp-0.1.0.mcpb"
+.\scripts\mcpb-build.ps1
 ```
 
-Output: `dist/clawd-mcp-*.mcpb` (includes src/, assets/prompts/, manifest.json)
+Or from just: `just mcpb`.
+
+Output: `dist/clawd-mcp-0.1.0.mcpb` (includes `src/clawd_mcp/`, `assets/prompts/`, `manifest.json`).
+
+## Contents
+
+- **assets/prompts/** – system.md, user.md, quick-start.md, configuration.md, troubleshooting.md, examples.json.
+- **src/clawd_mcp/** – Server source (copied at build time).
 
 ## References
 
 - [openclaw.ai](https://openclaw.ai)
 - [moltbook.com](https://moltbook.com)
 - [docs.openclaw.ai](https://docs.openclaw.ai)
+- MCP Central Docs: `sota-scripts/mcpb-packaging/README.md` (workspace standard)
