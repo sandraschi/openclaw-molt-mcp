@@ -20,7 +20,8 @@ One place to run agents, manage channels/routes/skills, and use Moltbook; OpenCl
 
 ## Install & run
 
-**Clone-based** (no PyPI package yet). See **[INSTALL.md](INSTALL.md)** for: clone repo, install from source, MCP only or webapp (API + frontend), one-shot scripts, config, logging, checks.
+**Clone-based** or **MCPB Bundle**. See **[INSTALL.md](INSTALL.md)** for: clone repo, install from source, MCP only or webapp (API + frontend), one-shot scripts, config, logging, checks.
+- **MCPB**: A standard `openclaw-mcp.mcpb` bundle is available for one-click import into compliant clients.
 
 ## Repo layout
 

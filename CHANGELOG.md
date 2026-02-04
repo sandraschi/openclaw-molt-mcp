@@ -2,9 +2,15 @@
 
 All notable changes to openclaw-mcp will be documented in this file.
 
-## [Unreleased]
+## [0.2.0] - 2026-02-04
 
 ### Added
+- **Functional Agent Messaging**: Implemented real `hooks/agent` integration in `GatewayClient`.
+- **Active Agent Tools**: Replaced placeholders in `clawd_agent` with functional implementations for `send_message` and `run_agent`.
+- **Standardized MCPB Packaging**: Added root `mcpb.json` and `.mcpbignore` for lean, standard builds.
+- **Manifest Standardization**: Moved `manifest.json` to root for industry-standard packaging.
+
+## [0.1.0] - 2026-01-30
 
 - **OpenClaw install detection**: Webapp checks if OpenClaw CLI is installed (`GET /api/openclaw/status`); shows banner with install alternatives (naked, Docker, VM) and dismiss via localStorage. `OpenClawInstallBanner` component.
 - **Startpage hero**: Hero section on Startpage (gradient, glow, responsive headline, tagline).

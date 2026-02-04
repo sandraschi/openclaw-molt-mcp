@@ -75,7 +75,11 @@ class GatewayClient:
             logger.error(
                 "Gateway HTTP error: %s",
                 e,
-                extra={"tool": "gateway_client", "operation": "tools_invoke", "error_type": "HTTPStatusError"},
+                extra={
+                    "tool": "gateway_client",
+                    "operation": "tools_invoke",
+                    "error_type": "HTTPStatusError",
+                },
                 exc_info=True,
             )
             return _dialogic_error(
@@ -86,7 +90,11 @@ class GatewayClient:
             logger.error(
                 "Gateway request error: %s",
                 e,
-                extra={"tool": "gateway_client", "operation": "tools_invoke", "error_type": type(e).__name__},
+                extra={
+                    "tool": "gateway_client",
+                    "operation": "tools_invoke",
+                    "error_type": type(e).__name__,
+                },
                 exc_info=True,
             )
             return _dialogic_error("Could not reach Gateway. Is OpenClaw running?", error=str(e))
@@ -102,7 +110,11 @@ class GatewayClient:
             logger.error(
                 "Wake HTTP error: %s",
                 e,
-                extra={"tool": "gateway_client", "operation": "hooks_wake", "error_type": "HTTPStatusError"},
+                extra={
+                    "tool": "gateway_client",
+                    "operation": "hooks_wake",
+                    "error_type": "HTTPStatusError",
+                },
                 exc_info=True,
             )
             return _dialogic_error(f"Wake failed: {e.response.status_code}", error=str(e))
@@ -110,7 +122,61 @@ class GatewayClient:
             logger.error(
                 "Wake request error: %s",
                 e,
-                extra={"tool": "gateway_client", "operation": "hooks_wake", "error_type": type(e).__name__},
+                extra={
+                    "tool": "gateway_client",
+                    "operation": "hooks_wake",
+                    "error_type": type(e).__name__,
+                },
+                exc_info=True,
+            )
+            return _dialogic_error("Could not reach Gateway.", error=str(e))
+
+    async def hooks_agent(
+        self,
+        message: str,
+        session_key: str = "main",
+        deliver: bool = True,
+        channel: str | None = None,
+        to: str | None = None,
+    ) -> dict[str, Any]:
+        """Send message to agent via POST /hooks/agent."""
+        body: dict[str, Any] = {
+            "message": message,
+            "sessionKey": session_key,
+            "deliver": deliver,
+        }
+        if channel:
+            body["channel"] = channel
+        if to:
+            body["to"] = to
+
+        try:
+            client = await self._get_client()
+            resp = await client.post("/hooks/agent", json=body)
+            resp.raise_for_status()
+            data = resp.json()
+            return _dialogic_success("Agent hook triggered successfully.", data)
+        except httpx.HTTPStatusError as e:
+            logger.error(
+                "Agent hook HTTP error: %s",
+                e,
+                extra={
+                    "tool": "gateway_client",
+                    "operation": "hooks_agent",
+                    "error_type": "HTTPStatusError",
+                },
+                exc_info=True,
+            )
+            return _dialogic_error(f"Agent hook failed: {e.response.status_code}", error=str(e))
+        except httpx.RequestError as e:
+            logger.error(
+                "Agent hook request error: %s",
+                e,
+                extra={
+                    "tool": "gateway_client",
+                    "operation": "hooks_agent",
+                    "error_type": type(e).__name__,
+                },
                 exc_info=True,
             )
             return _dialogic_error("Could not reach Gateway.", error=str(e))

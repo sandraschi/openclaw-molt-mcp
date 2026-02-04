@@ -49,21 +49,23 @@ async def clawd_agent(
 
         if operation == "run_agent":
             ctx.info("Running isolated agent turn (deliver=False)")
-            # TODO: POST /hooks/agent with deliver=false
-            return {
-                "success": True,
-                "message": "Agent run requested. Webhook /hooks/agent integration pending.",
-                "data": {"operation": operation, "session_key": session_key},
-            }
+            result = await client.hooks_agent(
+                message=message or "Isolated run triggered via openclaw-mcp",
+                session_key=session_key,
+                deliver=False,
+            )
+            return result
 
         if operation == "send_message":
             ctx.info("Sending message to agent")
-            # TODO: POST /hooks/agent with deliver=deliver, channel, to
-            return {
-                "success": True,
-                "message": "Message send requested. Webhook /hooks/agent integration pending.",
-                "data": {"operation": operation, "deliver": deliver, "channel": channel},
-            }
+            result = await client.hooks_agent(
+                message=message,
+                session_key=session_key,
+                deliver=deliver,
+                channel=channel,
+                to=to,
+            )
+            return result
 
         return {
             "success": False,

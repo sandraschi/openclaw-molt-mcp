@@ -174,7 +174,7 @@ For maximum security, run OpenClaw inside a **VirtualBox VM** with Docker. This 
 
 **Requirements:**
 - VirtualBox 7.2.6+
-- 8GB RAM minimum (16GB recommended)
+- 16GB RAM minimum (for VM allocation)
 - 40GB free disk space
 - ~50 minutes total setup time
 
@@ -188,7 +188,7 @@ For maximum security, run OpenClaw inside a **VirtualBox VM** with Docker. This 
 
 1. **Download Ubuntu Server 24.04 ISO** (~2.6 GB)
 2. **Create VirtualBox VM**
-   - 4-8GB RAM, 40GB disk
+   - 16GB RAM, 40GB disk
    - NAT + Host-Only network adapters
 3. **Install Ubuntu Server** (~10 minutes)
 4. **Install Docker** in the VM
