@@ -1,4 +1,4 @@
-# openclaw-mcp Documentation Index
+# openclaw-molt-mcp Documentation Index
 
 ## Overview
 
@@ -8,23 +8,26 @@
 | [../INSTALL.md](../INSTALL.md) | Install and run: MCP-only, webapp (API + frontend), one-shot scripts, config, logging, checks |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Repo layout, MCP vs webapp API, data flow |
 | [README_OPENCLAW.md](README_OPENCLAW.md) | OpenClaw platform, Gateway, channels, Pi agent, ClawHub |
-| [README_OPENCLAW_MCP_TOOLS.md](README_OPENCLAW_MCP_TOOLS.md) | openclaw-mcp server, tools (agent, sessions, channels, routing, skills, gateway, security, moltbook) |
+| [README_openclaw_molt_mcp_TOOLS.md](README_openclaw_molt_mcp_TOOLS.md) | openclaw-molt-mcp server, tools (agent, sessions, channels, routing, skills, gateway, security, moltbook) |
 | [README_WEBAPP.md](README_WEBAPP.md) | React dashboard: Startpage, AI, Channels, Routes, Diagram, Statistics, Moltbook (draft + register with Moltbook when OpenClaw installed), Integrations, Clawnews, Skills, Security, Generate (landing, OpenClaw env snippet, MCP config insert), Settings; OpenClaw install banner; Logger; API endpoints |
 | [README_MOLTBOOK.md](README_MOLTBOOK.md) | Moltbook site, skills, agent heartbeats |
 | [../SECURITY.md](../SECURITY.md) | Security summary and link to full guide |
 | [SECURITY_HARDENING.md](SECURITY_HARDENING.md) | Full guide: threats, hardening, Tailscale/Traefik, patterns, clawd_security |
 | [HOW_THIS_WAS_MADE.md](HOW_THIS_WAS_MADE.md) | How this repo was built: vibecode architect, Cursor agentic IDE, one day, token cost zilch; neckbeard estimate |
+| [COMMUNITY_ROADMAP.md](COMMUNITY_ROADMAP.md) | Community roadmap: prioritized features, implementation phases, architecture |
 
 Repo manifests (root): [../llms.txt](../llms.txt) (LLM-friendly manifest; Gitingest, llmstxt.org), [../glama.json](../glama.json) (Glama MCP listing). See README section **Repo manifests (LLM scrapers)**.
 
 ## By topic
 
 - **Getting started**: [../README.md](../README.md), [../INSTALL.md](../INSTALL.md), [README_WEBAPP.md](README_WEBAPP.md) (Run, start scripts)
-- **MCP server and tools**: [README_OPENCLAW_MCP_TOOLS.md](README_OPENCLAW_MCP_TOOLS.md)
+- **MCP server and tools**: [README_openclaw_molt_mcp_TOOLS.md](README_openclaw_molt_mcp_TOOLS.md)
 - **Webapp and API**: [README_WEBAPP.md](README_WEBAPP.md) (pages, OpenClaw banner, Generate, Moltbook register, API endpoints, Diagram, Statistics, Logger)
 - **OpenClaw / Moltbook**: [README_OPENCLAW.md](README_OPENCLAW.md), [README_MOLTBOOK.md](README_MOLTBOOK.md)
 - **Security**: [../SECURITY.md](../SECURITY.md), [SECURITY_HARDENING.md](SECURITY_HARDENING.md)
 - **Architecture**: [ARCHITECTURE.md](ARCHITECTURE.md)
+- **Roadmap**: [COMMUNITY_ROADMAP.md](COMMUNITY_ROADMAP.md)
+- **Integrations**: [integrations/BASTIO_INTEGRATION.md](integrations/BASTIO_INTEGRATION.md), [integrations/TRYLON_INTEGRATION.md](integrations/TRYLON_INTEGRATION.md), [integrations/LLAMAFIREWALL_INTEGRATION.md](integrations/LLAMAFIREWALL_INTEGRATION.md)
 
 ## Scripts
 

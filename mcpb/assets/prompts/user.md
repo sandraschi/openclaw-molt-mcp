@@ -1,10 +1,10 @@
-# openclaw-mcp User Guide
+# openclaw-molt-mcp User Guide
 
 ## Quick Start
 
 1. **Ensure OpenClaw is running**: `openclaw gateway --port 18789`
 2. **Configure env**: Set `OPENCLAW_GATEWAY_TOKEN` if your Gateway uses token auth
-3. **Add openclaw-mcp to your MCP client** (Cursor, Claude Desktop)
+3. **Add openclaw-molt-mcp to your MCP client** (Cursor, Claude Desktop)
 4. **Use tools**: clawd_agent, clawd_sessions, clawd_skills, clawd_gateway
 
 ## Tool Usage

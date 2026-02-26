@@ -63,7 +63,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 npm i -g openclaw
 ```
 
-### openclaw-mcp integration
+### openclaw-molt-mcp integration
 
 ## Configuration
 
@@ -87,13 +87,13 @@ npm i -g openclaw
 
 ## Voice (TTS / STT) – piggybacking
 
-openclaw-mcp can use OpenClaw’s TTS (and, where exposed, STT) via the Gateway.
+openclaw-molt-mcp can use OpenClaw’s TTS (and, where exposed, STT) via the Gateway.
 
 **TTS (text-to-speech)**  
-OpenClaw has a Gateway tool `tts` that converts text to speech (ElevenLabs, OpenAI, or Edge TTS). Invoke it with `POST /tools/invoke`: `tool: "tts"`, `args: { text: "..." }`. The result includes a MEDIA path to the generated audio. openclaw-mcp exposes this as the MCP tool `clawd_voice` (operation `tts`, argument `text`). Configure TTS in OpenClaw: `messages.tts` in `~/.openclaw/openclaw.json`; see [OpenClaw TTS](https://docs.clawd.bot/tts).
+OpenClaw has a Gateway tool `tts` that converts text to speech (ElevenLabs, OpenAI, or Edge TTS). Invoke it with `POST /tools/invoke`: `tool: "tts"`, `args: { text: "..." }`. The result includes a MEDIA path to the generated audio. openclaw-molt-mcp exposes this as the MCP tool `clawd_voice` (operation `tts`, argument `text`). Configure TTS in OpenClaw: `messages.tts` in `~/.openclaw/openclaw.json`; see [OpenClaw TTS](https://docs.clawd.bot/tts).
 
 **STT (speech-to-text)**  
-OpenClaw handles voice input in its own pipeline (voice notes, Talk mode, Voice Wake). Transcription hooks and node audio are documented under [Audio and voice notes](https://docs.clawd.bot/nodes/audio) and [Talk mode](https://docs.clawd.bot/nodes/talk). If the Gateway exposes an STT tool via `/tools/invoke`, openclaw-mcp can add a similar proxy later.
+OpenClaw handles voice input in its own pipeline (voice notes, Talk mode, Voice Wake). Transcription hooks and node audio are documented under [Audio and voice notes](https://docs.clawd.bot/nodes/audio) and [Talk mode](https://docs.clawd.bot/nodes/talk). If the Gateway exposes an STT tool via `/tools/invoke`, openclaw-molt-mcp can add a similar proxy later.
 
 ## References
 

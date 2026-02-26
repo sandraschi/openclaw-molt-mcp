@@ -1,9 +1,17 @@
-import { useState, useEffect } from "react";
-import { MessageSquare, Save, ExternalLink, Send, CheckCircle } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { MessageSquare, Save, ExternalLink, Send, CheckCircle, ThumbsUp, Search } from "lucide-react";
 import { cn } from "../utils/cn";
-import { fetchOpenClawStatus, registerMoltbookAgent } from "../services/api";
+import {
+  fetchOpenClawStatus,
+  registerMoltbookAgent,
+  fetchMoltbookFeed,
+  searchMoltbook,
+  moltbookPost,
+  moltbookComment,
+  moltbookUpvote,
+} from "../services/api";
 
-const STORAGE_KEY = "openclaw-mcp-moltbook-agent-draft";
+const STORAGE_KEY = "openclaw-molt-mcp-moltbook-agent-draft";
 
 interface AgentDraft {
   name: string;
@@ -23,13 +31,29 @@ const defaultDraft: AgentDraft = {
   updatedAt: "",
 };
 
+type MoltbookTab = "draft" | "feed" | "search";
+
 export default function Moltbook() {
+  const [tab, setTab] = useState<MoltbookTab>("draft");
   const [draft, setDraft] = useState<AgentDraft>(defaultDraft);
   const [saved, setSaved] = useState(false);
   const [openclawInstalled, setOpenclawInstalled] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerResult, setRegisterResult] = useState<{ success: boolean; message: string } | null>(null);
   const [registerError, setRegisterError] = useState<string | null>(null);
+
+  const [feedItems, setFeedItems] = useState<unknown[]>([]);
+  const [feedLoading, setFeedLoading] = useState(false);
+  const [feedError, setFeedError] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<unknown[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  const [postContent, setPostContent] = useState("");
+  const [postLoading, setPostLoading] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -48,6 +72,69 @@ export default function Moltbook() {
       .then((r) => setOpenclawInstalled(r.cli_installed))
       .catch(() => setOpenclawInstalled(false));
   }, []);
+
+  const loadFeed = useCallback(async () => {
+    setFeedLoading(true);
+    setFeedError(null);
+    try {
+      const res = await fetchMoltbookFeed(20);
+      const data = res.data as Record<string, unknown> | undefined;
+      const items = (data?.posts ?? data?.feed ?? data ?? []) as unknown[];
+      setFeedItems(Array.isArray(items) ? items : []);
+    } catch (e) {
+      setFeedError(e instanceof Error ? e.message : "Feed failed");
+      setFeedItems([]);
+    } finally {
+      setFeedLoading(false);
+    }
+  }, []);
+
+  const handleSearch = useCallback(async () => {
+    if (!searchQuery.trim()) return;
+    setSearchLoading(true);
+    setSearchError(null);
+    try {
+      const res = await searchMoltbook(searchQuery.trim());
+      const data = res.data;
+      setSearchResults(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setSearchError(e instanceof Error ? e.message : "Search failed");
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  }, [searchQuery]);
+
+  const handlePost = useCallback(async () => {
+    if (!postContent.trim()) return;
+    setPostLoading(true);
+    setPostError(null);
+    try {
+      await moltbookPost(postContent.trim());
+      setPostContent("");
+      loadFeed();
+    } catch (e) {
+      setPostError(e instanceof Error ? e.message : "Post failed");
+    } finally {
+      setPostLoading(false);
+    }
+  }, [postContent, loadFeed]);
+
+  const handleUpvote = useCallback(
+    async (postId: string) => {
+      try {
+        await moltbookUpvote(postId);
+        loadFeed();
+      } catch {
+        // ignore
+      }
+    },
+    [loadFeed]
+  );
+
+  useEffect(() => {
+    if (tab === "feed") loadFeed();
+  }, [tab, loadFeed]);
 
   function handleSave() {
     const next = { ...draft, updatedAt: new Date().toISOString() };
@@ -96,10 +183,144 @@ export default function Moltbook() {
           Moltbook
         </h1>
         <p className="mt-2 text-foreground-secondary">
-          Prepare a Moltbook agent: name, bio, personality, goals, and post ideas. Save a draft locally; if OpenClaw is installed, you can send the registration request to Moltbook from here.
+          Prepare a Moltbook agent, browse feed, search, and post. Requires MOLTBOOK_API_KEY.
         </p>
       </section>
 
+      <section className="flex gap-2 border-b border-border">
+        {(["draft", "feed", "search"] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTab(t)}
+            className={cn(
+              "px-4 py-2 font-medium capitalize",
+              tab === t
+                ? "border-b-2 border-primary text-primary"
+                : "text-foreground-secondary hover:text-foreground"
+            )}
+          >
+            {t}
+          </button>
+        ))}
+      </section>
+
+      {tab === "feed" && (
+        <section className="space-y-4">
+          <div className="rounded-lg border border-border bg-card p-4">
+            <h2 className="font-mono font-semibold">New post</h2>
+            <textarea
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+              placeholder="Write a post..."
+              rows={3}
+              className={cn(
+                "mt-2 w-full rounded border border-border bg-background px-3 py-2 text-sm",
+                "focus:border-primary focus:outline-none"
+              )}
+            />
+            <button
+              type="button"
+              onClick={handlePost}
+              disabled={postLoading || !postContent.trim()}
+              className="mt-2 rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
+            >
+              {postLoading ? "Posting..." : "Post"}
+            </button>
+            {postError && <p className="mt-2 text-sm text-destructive">{postError}</p>}
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-mono font-semibold">Feed</h2>
+              <button
+                type="button"
+                onClick={loadFeed}
+                disabled={feedLoading}
+                className="text-sm text-primary hover:underline disabled:opacity-50"
+              >
+                Refresh
+              </button>
+            </div>
+            {feedLoading ? (
+              <p className="mt-4 text-sm text-muted">Loading...</p>
+            ) : feedError ? (
+              <p className="mt-4 text-sm text-destructive">{feedError}</p>
+            ) : feedItems.length === 0 ? (
+              <p className="mt-4 text-sm text-muted">No posts. Post something or check MOLTBOOK_API_KEY.</p>
+            ) : (
+              <ul className="mt-4 space-y-4">
+                {feedItems.map((item, i) => {
+                  const post = item as Record<string, unknown>;
+                  const id = (post.id ?? post.post_id ?? i) as string;
+                  const content = (post.content ?? post.text ?? JSON.stringify(post)) as string;
+                  return (
+                    <li key={id} className="rounded border border-border bg-muted/20 p-4">
+                      <p className="whitespace-pre-wrap text-sm">{content}</p>
+                      <button
+                        type="button"
+                        onClick={() => handleUpvote(id)}
+                        className="mt-2 flex items-center gap-1 text-xs text-muted hover:text-foreground"
+                      >
+                        <ThumbsUp className="h-3 w-3" />
+                        Upvote
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </section>
+      )}
+
+      {tab === "search" && (
+        <section className="rounded-lg border border-border bg-card p-6">
+          <h2 className="font-mono font-semibold">Search</h2>
+          <div className="mt-2 flex gap-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Search posts..."
+              className={cn(
+                "flex-1 rounded border border-border bg-background px-3 py-2 text-sm",
+                "focus:border-primary focus:outline-none"
+              )}
+            />
+            <button
+              type="button"
+              onClick={handleSearch}
+              disabled={searchLoading || !searchQuery.trim()}
+              className="flex items-center gap-2 rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
+            >
+              <Search className="h-4 w-4" />
+              Search
+            </button>
+          </div>
+          {searchError && <p className="mt-2 text-sm text-destructive">{searchError}</p>}
+          {searchLoading ? (
+            <p className="mt-4 text-sm text-muted">Searching...</p>
+          ) : searchResults.length > 0 ? (
+            <ul className="mt-4 space-y-4">
+              {searchResults.map((item, i) => {
+                const post = item as Record<string, unknown>;
+                const content = (post.content ?? post.text ?? JSON.stringify(post)) as string;
+                return (
+                  <li key={i} className="rounded border border-border bg-muted/20 p-4">
+                    <p className="whitespace-pre-wrap text-sm">{content}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : searchQuery && !searchLoading ? (
+            <p className="mt-4 text-sm text-muted">No results.</p>
+          ) : null}
+        </section>
+      )}
+
+      {tab === "draft" && (
+      <>
       <section className="rounded-lg border border-border bg-card p-6">
         <h2 className="flex items-center gap-2 font-mono text-xl font-semibold text-foreground">
           <MessageSquare className="h-5 w-5 text-primary" />
@@ -285,6 +506,8 @@ export default function Moltbook() {
           </li>
         </ul>
       </section>
+      </>
+      )}
     </div>
   );
 }

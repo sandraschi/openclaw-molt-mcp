@@ -9,6 +9,9 @@ import Diagram from "./pages/Diagram";
 import Statistics from "./pages/Statistics";
 import Moltbook from "./pages/Moltbook";
 import Integrations from "./pages/Integrations";
+import Sessions from "./pages/Sessions";
+import Onboarding from "./pages/Onboarding";
+import Health from "./pages/Health";
 import Clawnews from "./pages/Clawnews";
 import Skills from "./pages/Skills";
 import Security from "./pages/Security";
@@ -28,6 +31,9 @@ function App() {
         <Route path="/statistics" element={<Statistics />} />
         <Route path="/moltbook" element={<Moltbook />} />
         <Route path="/integrations" element={<Integrations />} />
+        <Route path="/sessions" element={<Sessions />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/health" element={<Health />} />
         <Route path="/clawnews" element={<Clawnews />} />
         <Route path="/skills" element={<Skills />} />
         <Route path="/security" element={<Security />} />

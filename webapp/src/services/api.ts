@@ -51,6 +51,22 @@ export interface OpenClawStatusResponse {
   version?: string | null;
 }
 
+export interface HealthCheckItem {
+  ok: boolean;
+  message: string;
+}
+
+export interface HealthAggregateResponse {
+  success: boolean;
+  checks: Record<string, HealthCheckItem>;
+}
+
+export async function fetchHealthAggregate(): Promise<HealthAggregateResponse> {
+  const res = await fetch(apiUrl("/api/health/aggregate"));
+  if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
+  return res.json() as Promise<HealthAggregateResponse>;
+}
+
 export async function fetchOpenClawStatus(): Promise<OpenClawStatusResponse> {
   const res = await fetch(apiUrl("/api/openclaw/status"));
   if (!res.ok) throw new Error(`OpenClaw status failed: ${res.status}`);
@@ -70,6 +86,73 @@ export interface MoltbookRegisterResponse {
   message?: string;
   data?: Record<string, unknown>;
   error?: string;
+}
+
+export interface MoltbookFeedResponse {
+  success: boolean;
+  message?: string;
+  data?: { posts?: unknown[]; feed?: unknown[] };
+}
+
+export async function fetchMoltbookFeed(limit?: number): Promise<MoltbookFeedResponse> {
+  const url = limit ? `/api/moltbook/feed?limit=${limit}` : "/api/moltbook/feed";
+  const res = await fetch(apiUrl(url));
+  if (!res.ok) throw new Error(`Moltbook feed failed: ${res.status}`);
+  return res.json() as Promise<MoltbookFeedResponse>;
+}
+
+export interface MoltbookSearchResponse {
+  success: boolean;
+  message?: string;
+  data?: unknown[];
+}
+
+export async function searchMoltbook(query: string): Promise<MoltbookSearchResponse> {
+  const res = await fetch(apiUrl(`/api/moltbook/search?q=${encodeURIComponent(query)}`));
+  if (!res.ok) throw new Error(`Moltbook search failed: ${res.status}`);
+  return res.json() as Promise<MoltbookSearchResponse>;
+}
+
+export async function moltbookPost(content: string): Promise<{ success: boolean; message?: string; data?: unknown }> {
+  const res = await fetch(apiUrl("/api/moltbook/post"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Moltbook post failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function moltbookComment(
+  postId: string,
+  content: string
+): Promise<{ success: boolean; message?: string; data?: unknown }> {
+  const res = await fetch(apiUrl("/api/moltbook/comment"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ post_id: postId, content }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Moltbook comment failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function moltbookUpvote(postId: string): Promise<{ success: boolean; message?: string }> {
+  const res = await fetch(apiUrl("/api/moltbook/upvote"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ post_id: postId }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Moltbook upvote failed: ${res.status}`);
+  }
+  return res.json();
 }
 
 export async function registerMoltbookAgent(
@@ -97,6 +180,18 @@ export async function fetchSkills(): Promise<SkillsResponse> {
   const res = await fetch(apiUrl("/api/skills"));
   if (!res.ok) throw new Error(`Skills failed: ${res.status}`);
   return res.json() as Promise<SkillsResponse>;
+}
+
+export interface SkillContentResponse {
+  success: boolean;
+  name: string;
+  content: string;
+}
+
+export async function fetchSkillContent(name: string): Promise<SkillContentResponse> {
+  const res = await fetch(apiUrl(`/api/skills/${encodeURIComponent(name)}/content`));
+  if (!res.ok) throw new Error(`Skill content failed: ${res.status}`);
+  return res.json() as Promise<SkillContentResponse>;
 }
 
 export interface ClawNewsItem {
@@ -378,6 +473,66 @@ export interface McpConfigInsertResponse {
   backups: Record<string, string>;
   errors: Record<string, string>;
   message: string;
+}
+
+export interface SecurityFinding {
+  id: string;
+  severity: string;
+  title: string;
+  skill?: string;
+  path?: string;
+  details?: string;
+}
+
+export interface SecurityAuditResponse {
+  success: boolean;
+  findings: SecurityFinding[];
+  checklist: Array<{ id: string; title: string; description: string; ref: string }>;
+  config_issues: Array<{ path: string; issue: string }>;
+  playbook?: {
+    title: string;
+    steps: Array<{ step: number; action: string; detail: string }>;
+    references: string[];
+  };
+}
+
+export interface SessionsRequest {
+  operation: "list" | "history" | "send";
+  session_key?: string;
+  args?: Record<string, unknown>;
+}
+
+export interface SessionsResponse {
+  success: boolean;
+  message: string;
+  data?: unknown;
+  error?: string;
+}
+
+export async function sessionsApi(
+  body: SessionsRequest
+): Promise<SessionsResponse> {
+  const res = await fetch(apiUrl("/api/sessions"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Sessions failed: ${res.status} ${text}`);
+  }
+  return res.json() as Promise<SessionsResponse>;
+}
+
+export async function runSecurityAudit(): Promise<SecurityAuditResponse> {
+  const res = await fetch(apiUrl("/api/security/audit"), {
+    method: "POST",
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Security audit failed: ${res.status} ${text}`);
+  }
+  return res.json() as Promise<SecurityAuditResponse>;
 }
 
 export async function insertMcpConfig(

@@ -1,7 +1,7 @@
 {
-  "name": "openclaw-mcp-webapp",
+  "name": "openclaw-molt-mcp-webapp",
   "version": "0.1.0",
-  "description": "openclaw-mcp Web Dashboard",
+  "description": "openclaw-molt-mcp Web Dashboard",
   "private": true,
   "type": "module",
   "dependencies": {

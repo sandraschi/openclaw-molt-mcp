@@ -1,6 +1,6 @@
 {
   "manifest_version": "0.2",
-  "name": "openclaw-mcp",
+  "name": "openclaw-molt-mcp",
   "version": "0.1.0",
   "description": "MCP server for OpenClaw/Moltbook ecosystem integration. Includes extensive prompt templates and examples.",
   "author": {
@@ -10,14 +10,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sandraschi/openclaw-mcp"
+    "url": "https://github.com/sandraschi/openclaw-molt-mcp"
   },
   "server": {
     "type": "python",
-    "entry_point": "src/openclaw_mcp/server.py",
+    "entry_point": "src/openclaw_molt_mcp/server.py",
     "mcp_config": {
       "command": "python",
-      "args": ["-m", "openclaw_mcp"],
+      "args": ["-m", "openclaw_molt_mcp"],
       "env": {
         "PYTHONPATH": "${__dirname}/..",
         "PYTHONUNBUFFERED": "1"

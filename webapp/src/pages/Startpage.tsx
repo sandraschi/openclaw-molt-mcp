@@ -82,7 +82,7 @@ export default function Startpage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(249,115,22,0.12),transparent)]" aria-hidden />
         <div className="relative">
           <h1 className="font-mono text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-            openclaw-mcp
+            openclaw-molt-mcp
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-foreground-secondary sm:text-xl">
             Bridge Cursor and Claude Desktop to the OpenClaw and Moltbook ecosystem.

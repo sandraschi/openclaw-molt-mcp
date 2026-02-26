@@ -1,5 +1,6 @@
-"""Pytest configuration and fixtures for openclaw-mcp."""
+"""Pytest configuration and fixtures for openclaw-molt-mcp."""
 
+import json
 from pathlib import Path
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock
@@ -7,7 +8,31 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 import pytest_asyncio
 
-from openclaw_mcp.config import Settings
+from fastmcp.client import Client
+from openclaw_molt_mcp.config import Settings
+from openclaw_molt_mcp.mcp_instance import mcp
+
+# Import server to register tools before Client connects
+from openclaw_molt_mcp import server  # noqa: F401
+
+
+def extract_tool_result(result: object) -> dict:
+    """Extract dict from CallToolResult or ToolResult. Uses result.data if dict, else parses content."""
+    if hasattr(result, "data") and isinstance(result.data, dict):
+        return result.data
+    if hasattr(result, "content") and result.content:
+        part = result.content[0]
+        text = getattr(part, "text", str(part))
+        if isinstance(text, str) and (text.startswith("{") or text.startswith("[")):
+            return json.loads(text)
+    return {}
+
+
+@pytest_asyncio.fixture
+async def mcp_client():
+    """Async fixture providing FastMCP Client connected to mcp server (with tools loaded)."""
+    async with Client(transport=mcp) as client:
+        yield client
 
 
 @pytest.fixture

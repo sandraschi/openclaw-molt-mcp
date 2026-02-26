@@ -1,4 +1,4 @@
-# openclaw-mcp Quick Start
+# openclaw-molt-mcp Quick Start
 
 ## 1. Install OpenClaw (if not installed)
 
@@ -24,9 +24,9 @@ Or via daemon (after `openclaw onboard --install-daemon`):
 openclaw status
 ```
 
-## 3. Configure openclaw-mcp
+## 3. Configure openclaw-molt-mcp
 
-Create `.env` in openclaw-mcp root:
+Create `.env` in openclaw-molt-mcp root:
 
 ```
 OPENCLAW_GATEWAY_URL=http://127.0.0.1:18789
@@ -41,10 +41,10 @@ If Gateway uses loopback-only without auth, token may be omitted.
 ```json
 {
   "mcpServers": {
-    "openclaw-mcp": {
+    "openclaw-molt-mcp": {
       "command": "python",
-      "args": ["-m", "openclaw_mcp"],
-      "cwd": "D:\\Dev\\repos\\openclaw-mcp"
+      "args": ["-m", "openclaw_molt_mcp"],
+      "cwd": "D:\\Dev\\repos\\openclaw-molt-mcp"
     }
   }
 }
@@ -54,10 +54,10 @@ If Gateway uses loopback-only without auth, token may be omitted.
 ```json
 {
   "mcpServers": {
-    "openclaw-mcp": {
+    "openclaw-molt-mcp": {
       "command": "python",
-      "args": ["-m", "openclaw_mcp"],
-      "cwd": "D:\\Dev\\repos\\openclaw-mcp"
+      "args": ["-m", "openclaw_molt_mcp"],
+      "cwd": "D:\\Dev\\repos\\openclaw-molt-mcp"
     }
   }
 }

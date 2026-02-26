@@ -1,4 +1,4 @@
-# openclaw-mcp Configuration
+# openclaw-molt-mcp Configuration
 
 ## Environment Variables
 

@@ -21,7 +21,7 @@
       "tool": "clawd_agent",
       "args": {
         "operation": "wake",
-        "message": "Scheduled check-in via openclaw-mcp"
+        "message": "Scheduled check-in via openclaw-molt-mcp"
       },
       "expected": "success: true, Wake triggered successfully"
     },

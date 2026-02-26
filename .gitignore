@@ -57,3 +57,4 @@ generated/
 # MCPB (copied at build time; do not commit)
 mcpb/src/
 .mcpbignore
+*.mcpb

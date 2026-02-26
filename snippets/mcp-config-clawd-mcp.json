@@ -1,7 +1,7 @@
 {
-  "openclaw-mcp": {
+  "openclaw-molt-mcp": {
     "command": "python",
-    "args": ["-m", "openclaw_mcp"],
+    "args": ["-m", "openclaw_molt_mcp"],
     "env": {
       "PYTHONPATH": "<REPO_ROOT>/src",
       "PYTHONUNBUFFERED": "1"

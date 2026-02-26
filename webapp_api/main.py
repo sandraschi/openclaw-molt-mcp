@@ -1,8 +1,8 @@
 """
-FastAPI backend for openclaw-mcp webapp: proxy to OpenClaw Gateway, Ollama (models, generate, chat), skills, clawnews.
+FastAPI backend for openclaw-molt-mcp webapp: proxy to OpenClaw Gateway, Ollama (models, generate, chat), skills, clawnews.
 
 Run from repo root with PYTHONPATH=src:
-  uvicorn webapp_api.main:app --reload --port 5181
+  uvicorn webapp_api.main:app --reload --port 10765
 """
 
 import asyncio
@@ -12,18 +12,21 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 OLLAMA_BASE = os.environ.get("OLLAMA_BASE", "http://localhost:11434")
+WEBAPP_API_KEY = os.environ.get("WEBAPP_API_KEY", "")
 
 # Requires PYTHONPATH=src
-from openclaw_mcp.config import Settings
-from openclaw_mcp.gateway_client import GatewayClient
-from openclaw_mcp.logging_config import get_log_file_path
-from openclaw_mcp.moltbook_client import MoltbookClient
-from openclaw_mcp.serve_logs import tail_log_lines
-from openclaw_mcp.tools.routing import _routing_config_fallback
+from openclaw_molt_mcp.config import Settings
+from openclaw_molt_mcp.gateway_client import GatewayClient
+from openclaw_molt_mcp.logging_config import get_log_file_path
+from openclaw_molt_mcp.moltbook_client import MoltbookClient
+from openclaw_molt_mcp.serve_logs import tail_log_lines
+from openclaw_molt_mcp.tools.routing import _routing_config_fallback
+from openclaw_molt_mcp.tools.security import run_full_audit
 
 from webapp_api.ollama_client import (
     load_preprompt,
@@ -34,24 +37,41 @@ from webapp_api.ollama_client import (
     ollama_pull,
     ollama_tags,
 )
-from webapp_api.landing_page_service import generate_landing_page
+from webapp_api.landing_page_service import generate_landing_page, sanitize_slug
 from webapp_api.mcp_config_insert import insert_into_config, list_clients
 
-app = FastAPI(title="openclaw-mcp Webapp API", version="0.1.0")
+app = FastAPI(title="openclaw-molt-mcp Webapp API", version="0.1.0")
 
 # Serve generated landing pages via HTTP
 REPO_ROOT = Path(__file__).resolve().parent.parent
 GENERATED_DIR = REPO_ROOT / "generated"
 GENERATED_DIR.mkdir(parents=True, exist_ok=True)
-app.mount("/generated", StaticFiles(directory=str(GENERATED_DIR), html=True), name="generated")
+app.mount(
+    "/generated", StaticFiles(directory=str(GENERATED_DIR), html=True), name="generated"
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5180", "http://127.0.0.1:5180"],
+    allow_origins=["http://localhost:10764", "http://127.0.0.1:10764"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def api_key_middleware(request, call_next):
+    """If WEBAPP_API_KEY is set, require X-API-Key on non-health endpoints. Local-only otherwise."""
+    if WEBAPP_API_KEY and not (
+        request.url.path == "/api/health" or request.url.path.startswith("/generated")
+    ):
+        key = request.headers.get("X-API-Key")
+        if key != WEBAPP_API_KEY:
+            return JSONResponse(
+                status_code=401, content={"detail": "Invalid or missing X-API-Key"}
+            )
+    return await call_next(request)
+
 
 settings = Settings()
 
@@ -70,6 +90,76 @@ class AskResponse(BaseModel):
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+LOG_SERVER_URL = os.environ.get("CLAWD_LOG_SERVER_URL", "http://127.0.0.1:8765")
+
+
+@app.get("/api/health/aggregate")
+async def health_aggregate():
+    """Aggregate health: Gateway, OpenClaw CLI, Moltbook, Ollama, API, log server."""
+    import httpx
+
+    results: dict[str, dict] = {}
+    results["api"] = {"ok": True, "message": "Webapp API running"}
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            os.environ.get("OPENCLAW_CLI", "openclaw"),
+            "--version",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        await proc.communicate()
+        results["openclaw_cli"] = {
+            "ok": proc.returncode == 0,
+            "message": "CLI found" if proc.returncode == 0 else "CLI not found",
+        }
+    except FileNotFoundError:
+        results["openclaw_cli"] = {"ok": False, "message": "openclaw not in PATH"}
+
+    client = GatewayClient(settings)
+    try:
+        r = await client.tools_invoke(tool="sessions_list", args={})
+        results["gateway"] = {
+            "ok": r.get("success", False),
+            "message": r.get("message", "Unreachable"),
+        }
+    except Exception as e:
+        results["gateway"] = {"ok": False, "message": str(e)}
+    finally:
+        await client.close()
+
+    try:
+        mc = MoltbookClient(settings)
+        try:
+            r = await mc.get("/feed", params={"limit": "1"})
+            results["moltbook"] = {
+                "ok": r.get("success", False),
+                "message": r.get("message", "Unreachable"),
+            }
+        finally:
+            await mc.close()
+    except Exception as e:
+        results["moltbook"] = {"ok": False, "message": str(e)}
+
+    try:
+        ok = await ollama_health(OLLAMA_BASE)
+        results["ollama"] = {"ok": ok, "message": "Reachable" if ok else "Unreachable"}
+    except Exception as e:
+        results["ollama"] = {"ok": False, "message": str(e)}
+
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as hc:
+            resp = await hc.get(f"{LOG_SERVER_URL}/")
+            results["log_server"] = {
+                "ok": resp.status_code < 500,
+                "message": "Running" if resp.status_code < 500 else "Error",
+            }
+    except Exception as e:
+        results["log_server"] = {"ok": False, "message": str(e)}
+
+    return {"success": True, "checks": results}
 
 
 @app.get("/api/logs")
@@ -157,6 +247,23 @@ def list_skills():
     return {"success": True, "skills": sorted(skills), "path": str(skills_dir)}
 
 
+@app.get("/api/skills/{name}/content")
+def skill_content(name: str):
+    """Return SKILL.md content for a given skill. Sanitizes name to prevent path traversal."""
+    safe_name = "".join(c for c in name if c.isalnum() or c in "-_")
+    if safe_name != name:
+        raise HTTPException(status_code=400, detail="Invalid skill name")
+    skills_dir = _skills_dir()
+    skill_path = skills_dir / safe_name / "SKILL.md"
+    if not skill_path.exists():
+        raise HTTPException(status_code=404, detail="Skill not found")
+    try:
+        content = skill_path.read_text(encoding="utf-8", errors="replace")
+        return {"success": True, "name": safe_name, "content": content}
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Curated recent media (Jan–Feb 2026). Update periodically or add RSS/search later.
 CLAW_NEWS = [
     {
@@ -204,6 +311,86 @@ class MoltbookRegisterRequest(BaseModel):
     personality: str = ""
     goals: str = ""
     ideas: str = ""
+
+
+@app.get("/api/moltbook/feed")
+async def moltbook_feed(limit: int = 20):
+    """Get Moltbook feed. Proxies to clawd_moltbook feed."""
+    limit = max(1, min(100, limit))
+    client = MoltbookClient(settings)
+    try:
+        result = await client.get("/feed", params={"limit": str(limit)})
+        return result
+    finally:
+        await client.close()
+
+
+@app.get("/api/moltbook/search")
+async def moltbook_search(q: str = ""):
+    """Search Moltbook. Proxies to clawd_moltbook search."""
+    if not q.strip():
+        return {"success": False, "message": "query required", "data": []}
+    client = MoltbookClient(settings)
+    try:
+        result = await client.get("/search", params={"q": q.strip()})
+        return result
+    finally:
+        await client.close()
+
+
+class MoltbookPostRequest(BaseModel):
+    content: str
+
+
+class MoltbookCommentRequest(BaseModel):
+    post_id: str
+    content: str
+
+
+class MoltbookUpvoteRequest(BaseModel):
+    post_id: str
+
+
+@app.post("/api/moltbook/post")
+async def moltbook_post_api(req: MoltbookPostRequest):
+    """Create a Moltbook post. Rate limit: 1 per 30 min."""
+    if not req.content.strip():
+        raise HTTPException(status_code=400, detail="content required")
+    client = MoltbookClient(settings)
+    try:
+        result = await client.post("/posts", json={"content": req.content.strip()})
+        return result
+    finally:
+        await client.close()
+
+
+@app.post("/api/moltbook/comment")
+async def moltbook_comment_api(req: MoltbookCommentRequest):
+    """Add comment to a post. Rate limit: 1 per 20 sec."""
+    if not req.post_id.strip() or not req.content.strip():
+        raise HTTPException(status_code=400, detail="post_id and content required")
+    client = MoltbookClient(settings)
+    try:
+        result = await client.post(
+            f"/posts/{req.post_id.strip()}/comments",
+            json={"content": req.content.strip()},
+        )
+        return result
+    finally:
+        await client.close()
+
+
+@app.post("/api/moltbook/upvote")
+async def moltbook_upvote_api(req: MoltbookUpvoteRequest):
+    """Upvote a post."""
+    if not req.post_id.strip():
+        raise HTTPException(status_code=400, detail="post_id required")
+    client = MoltbookClient(settings)
+    try:
+        result = await client.post(f"/posts/{req.post_id.strip()}/upvote")
+        return result
+    finally:
+        await client.close()
 
 
 @app.post("/api/moltbook/register")
@@ -338,8 +525,18 @@ async def ollama_delete_route(req: DeleteRequest):
 
 # --- Channels and routing (Gateway tools; same as clawd_channels / clawd_routing) ---
 
-CHANNEL_OPERATIONS = ("list_channels", "get_channel_config", "send_message", "get_recent_messages")
-ROUTING_OPERATIONS = ("get_routing_rules", "update_routing", "test_routing", "get_session_by_channel")
+CHANNEL_OPERATIONS = (
+    "list_channels",
+    "get_channel_config",
+    "send_message",
+    "get_recent_messages",
+)
+ROUTING_OPERATIONS = (
+    "get_routing_rules",
+    "update_routing",
+    "test_routing",
+    "get_session_by_channel",
+)
 
 
 class ChannelsRequest(BaseModel):
@@ -366,7 +563,10 @@ class RoutingRequest(BaseModel):
 async def channels_api(req: ChannelsRequest):
     """Proxy to Gateway tool 'channels'. Operations: list_channels, get_channel_config, send_message, get_recent_messages."""
     if req.operation not in CHANNEL_OPERATIONS:
-        raise HTTPException(status_code=400, detail=f"Unknown operation. Use one of: {', '.join(CHANNEL_OPERATIONS)}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown operation. Use one of: {', '.join(CHANNEL_OPERATIONS)}",
+        )
     args = dict(req.args or {})
     if req.channel:
         args["channel"] = req.channel.strip()
@@ -392,11 +592,13 @@ async def channels_api(req: ChannelsRequest):
 class LandingPageRequest(BaseModel):
     project_name: str
     hero_title: str = "The Next Big Thing"
-    hero_subtitle: str = "Revolutionizing the way you do things. Built with OpenClaw and openclaw-mcp."
+    hero_subtitle: str = "Revolutionizing the way you do things. Built with OpenClaw and openclaw-molt-mcp."
     features: list[str] = []
     github_url: str = "https://github.com"
     author_name: str = "Developer"
-    author_bio: str = "I build things. Powered by OpenClaw, Moltbook, and openclaw-mcp."
+    author_bio: str = (
+        "I build things. Powered by OpenClaw, Moltbook, and openclaw-molt-mcp."
+    )
     donate_link: str = "#"
     hero_image_keyword: str = "technology"
     include_pictures: bool = True
@@ -427,8 +629,8 @@ async def landing_page_api(req: LandingPageRequest):
             include_pictures=req.include_pictures,
         )
         # Construct HTTP URL to the generated landing page (served via /generated mount)
-        slug = req.project_name.strip().lower().replace(" ", "-") or "my-site"
-        index_url = f"http://localhost:5181/generated/{slug}/www/index.html"
+        slug = sanitize_slug(req.project_name)
+        index_url = f"http://localhost:10765/generated/{slug}/www/index.html"
         return {
             "success": True,
             "path": out_path,
@@ -451,7 +653,7 @@ class McpConfigInsertRequest(BaseModel):
 
 @app.post("/api/mcp-config/insert")
 def mcp_config_insert_api(req: McpConfigInsertRequest):
-    """Insert openclaw-mcp snippet into selected client configs. Backs up originals; skips if already present."""
+    """Insert openclaw-molt-mcp snippet into selected client configs. Backs up originals; skips if already present."""
     repo_root = REPO_ROOT
     updated: list[str] = []
     skipped: list[str] = []
@@ -480,11 +682,60 @@ def mcp_config_insert_api(req: McpConfigInsertRequest):
     }
 
 
+SESSION_OPERATIONS = ("list", "history", "send")
+
+
+class SessionsRequest(BaseModel):
+    operation: str
+    session_key: str = "main"
+    args: dict | None = None
+
+
+@app.post("/api/sessions")
+async def sessions_api(req: SessionsRequest):
+    """Proxy to clawd_sessions (Gateway tools: sessions_list, sessions_history, sessions_send)."""
+    if req.operation not in SESSION_OPERATIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown operation. Use one of: {', '.join(SESSION_OPERATIONS)}",
+        )
+    tool_map = {
+        "list": "sessions_list",
+        "history": "sessions_history",
+        "send": "sessions_send",
+    }
+    tool_name = tool_map[req.operation]
+    client = GatewayClient(settings)
+    try:
+        result = await client.tools_invoke(
+            tool=tool_name,
+            action="json",
+            args=req.args or {},
+            session_key=req.session_key,
+        )
+        return result
+    finally:
+        await client.close()
+
+
+@app.post("/api/security/audit")
+async def security_audit():
+    """Run full security audit: audit, check_skills, validate_config, recommendations. Proxies to clawd_security logic."""
+    try:
+        result = await asyncio.to_thread(run_full_audit, settings)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/routing")
 async def routing_api(req: RoutingRequest):
     """Proxy to Gateway tool 'routing'. Operations: get_routing_rules, update_routing, test_routing, get_session_by_channel. Fallback: get_routing_rules from config."""
     if req.operation not in ROUTING_OPERATIONS:
-        raise HTTPException(status_code=400, detail=f"Unknown operation. Use one of: {', '.join(ROUTING_OPERATIONS)}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown operation. Use one of: {', '.join(ROUTING_OPERATIONS)}",
+        )
     args = dict(req.args or {})
     if req.channel:
         args["channel"] = req.channel.strip()

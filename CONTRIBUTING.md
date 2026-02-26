@@ -1,4 +1,4 @@
-# Contributing to openclaw-mcp
+# Contributing to openclaw-molt-mcp
 
 ## Setup
 

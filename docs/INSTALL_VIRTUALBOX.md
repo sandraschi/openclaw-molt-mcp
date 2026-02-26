@@ -284,9 +284,9 @@ http://192.168.56.101:18789?token=YOUR_TOKEN_HERE
 
 ---
 
-## Phase 9: Configure openclaw-mcp on Host (5 min)
+## Phase 9: Configure openclaw-molt-mcp on Host (5 min)
 
-On your **Windows host**, update your openclaw-mcp config:
+On your **Windows host**, update your openclaw-molt-mcp config:
 
 ### Set environment variables
 
@@ -298,11 +298,11 @@ $env:OPENCLAW_GATEWAY_TOKEN = "YOUR_TOKEN_HERE"
 Or add to your MCP client config:
 
 ```json
-"openclaw-mcp": {
+"openclaw-molt-mcp": {
   "command": "python",
-  "args": ["-m", "fastmcp", "run", "src/openclaw_mcp/server.py"],
+  "args": ["-m", "fastmcp", "run", "src/openclaw_molt_mcp/server.py"],
   "env": {
-    "PYTHONPATH": "D:/Dev/repos/openclaw-mcp/src",
+    "PYTHONPATH": "D:/Dev/repos/openclaw-molt-mcp/src",
     "PYTHONUNBUFFERED": "1",
     "OPENCLAW_GATEWAY_URL": "http://192.168.56.101:18789",
     "OPENCLAW_GATEWAY_TOKEN": "YOUR_TOKEN_HERE"

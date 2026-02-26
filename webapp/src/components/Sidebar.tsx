@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, Bot, MessageCircle, Route, GitBranch, BarChart3, Share2, Newspaper, Layers, Shield, Settings, Plug, Globe } from "lucide-react";
+import { Home, Bot, MessageCircle, Route, GitBranch, BarChart3, Share2, Newspaper, Layers, Shield, Settings, Plug, Globe, MessageSquare, Rocket, Activity } from "lucide-react";
 import { cn } from "../utils/cn";
 
 const navItems = [
@@ -10,7 +10,10 @@ const navItems = [
   { to: "/diagram", icon: GitBranch, label: "Diagram" },
   { to: "/statistics", icon: BarChart3, label: "Statistics" },
   { to: "/moltbook", icon: Share2, label: "Moltbook" },
+  { to: "/onboarding", icon: Rocket, label: "Onboarding" },
+  { to: "/health", icon: Activity, label: "Health" },
   { to: "/integrations", icon: Plug, label: "Integrations" },
+  { to: "/sessions", icon: MessageSquare, label: "Sessions" },
   { to: "/clawnews", icon: Newspaper, label: "Clawnews" },
   { to: "/skills", icon: Layers, label: "Skills" },
   { to: "/security", icon: Shield, label: "Security" },

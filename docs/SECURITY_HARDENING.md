@@ -1,8 +1,8 @@
-# Security – OpenClaw and openclaw-mcp
+# Security – OpenClaw and openclaw-molt-mcp
 
-OpenClaw (formerly Moltbot/Clawdbot) has major security risks when run with default configuration. This document summarizes threats, hardening steps, network patterns (Tailscale, Traefik), and openclaw-mcp security tools.
+OpenClaw (formerly Moltbot/Clawdbot) has major security risks when run with default configuration. This document summarizes threats, hardening steps, network patterns (Tailscale, Traefik), and openclaw-molt-mcp security tools.
 
-**Quick link**: [clawd_security tool](#openclaw-mcp-security-tools) | [Hardening checklist](#hardening-checklist-auth0-intruder) | [Network patterns](#network-patterns-tailscale-traefik) | [Security patterns](#security-patterns) | [Removing OpenClaw](../INSTALL.md#removing-openclaw)
+**Quick link**: [clawd_security tool](#openclaw-molt-mcp-security-tools) | [Hardening checklist](#hardening-checklist-auth0-intruder) | [Network patterns](#network-patterns-tailscale-traefik) | [Security patterns](#security-patterns) | [Removing OpenClaw](../INSTALL.md#removing-openclaw)
 
 ---
 
@@ -51,7 +51,7 @@ References: [Auth0 – Securing Moltbot](https://auth0.com/blog/five-step-guide-
 **Tailscale** (and tailnets) can expose the Gateway or webapp to other devices without opening ports on the public internet. Useful for remote access from a phone or another machine on the same tailnet.
 
 - **Transitive trust**: Devices on the same tailnet are trusted by Tailscale’s ACLs. A compromised or overly permissive device can reach your OpenClaw Gateway if you advertise it. **User beware**: treat the tailnet as a soft trust boundary, not a hard security boundary.
-- **Recommendation**: Only advertise the Gateway (or openclaw-mcp webapp) to the tailnet if you trust every device and user on that tailnet. Prefer binding to loopback and using Tailscale only for outbound (e.g. agent reaching external APIs), or use an explicit allow-list for which tailnet nodes can connect.
+- **Recommendation**: Only advertise the Gateway (or openclaw-molt-mcp webapp) to the tailnet if you trust every device and user on that tailnet. Prefer binding to loopback and using Tailscale only for outbound (e.g. agent reaching external APIs), or use an explicit allow-list for which tailnet nodes can connect.
 - **Docs**: [Tailscale – Serve](https://tailscale.com/kb/1247/serve), [ACLs](https://tailscale.com/kb/1018/acls).
 
 ### Traefik (and reverse proxies)
@@ -69,16 +69,16 @@ References: [Auth0 – Securing Moltbot](https://auth0.com/blog/five-step-guide-
 
 ## Security Patterns
 
-Patterns that fit well with OpenClaw and openclaw-mcp:
+Patterns that fit well with OpenClaw and openclaw-molt-mcp:
 
 1. **Loopback-first, proxy for access**  
    Gateway and webapp API bind to `127.0.0.1`. Any remote or LAN access goes through a reverse proxy (Traefik, Caddy) with TLS and auth. No direct exposure of OpenClaw ports.
 
 2. **VM or container sandbox**  
-   Run OpenClaw (and optionally openclaw-mcp) inside a VM or container. Host only runs the reverse proxy and MCP client; the agent’s blast radius is limited to the sandbox.
+   Run OpenClaw (and optionally openclaw-molt-mcp) inside a VM or container. Host only runs the reverse proxy and MCP client; the agent’s blast radius is limited to the sandbox.
 
 3. **Scoped tokens**  
-   Use a dedicated token for openclaw-mcp and Gateway; rotate it. Do not reuse the same token for CI, webhooks, and human access. Prefer short-lived tokens where the stack supports it.
+   Use a dedicated token for openclaw-molt-mcp and Gateway; rotate it. Do not reuse the same token for CI, webhooks, and human access. Prefer short-lived tokens where the stack supports it.
 
 4. **Skills allow-list**  
    Install only skills from trusted sources. Use `clawd_security` → `check_skills` regularly. Prefer a curated list (e.g. internal ClawHub fork) over public installs.
@@ -87,7 +87,7 @@ Patterns that fit well with OpenClaw and openclaw-mcp:
    Use one bot/instance for personal channels and another for group or work channels. Restrict `allowFrom` per channel so a compromise in one channel does not imply access to all.
 
 6. **Audit trail**  
-   Log Gateway access and MCP tool calls (openclaw-mcp structured logs, Traefik access logs). Retain for incident review; avoid logging full message bodies or secrets.
+   Log Gateway access and MCP tool calls (openclaw-molt-mcp structured logs, Traefik access logs). Retain for incident review; avoid logging full message bodies or secrets.
 
 7. **No secrets in agent-visible config**  
    Keep API keys and tokens in env vars or a secret manager the agent cannot read. Validate config with `clawd_security` → `validate_config` before deploy.
@@ -97,7 +97,23 @@ Patterns that fit well with OpenClaw and openclaw-mcp:
 
 ---
 
-## openclaw-mcp Security Tools
+## openclaw-molt-mcp Hardening (v0.2.1+)
+
+openclaw-molt-mcp includes these mitigations:
+
+| Mitigation | Description |
+|------------|-------------|
+| **Path traversal** | `clawd_skills` read and landing page generator reject `..`, path separators, and invalid characters in user-controlled paths. |
+| **Optional API key** | Set `WEBAPP_API_KEY` to require `X-API-Key` on webapp API. Unset = local-only (no auth). |
+| **CORS** | Log server restricts `Access-Control-Allow-Origin` to localhost origins. Override with `CLAWD_LOG_CORS_ORIGIN`. |
+| **openclaw_path** | `clawd_security` audit validates `OPENCLAW_OPENCLAW_PATH` before subprocess; rejects arbitrary binary paths. |
+| **Log redaction** | Log API redacts sensitive keys (token, password, api_key, etc.) before returning entries. |
+
+**Recommendation**: When exposing the webapp beyond localhost, set `WEBAPP_API_KEY` and configure your reverse proxy to pass it (or use proxy auth instead).
+
+---
+
+## openclaw-molt-mcp Security Tools
 
 Use `clawd_security` for:
 

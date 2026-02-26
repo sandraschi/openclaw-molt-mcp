@@ -12,7 +12,7 @@ import {
 import { useLog } from "../context/LogContext";
 
 const SHORTCUTS = [
-  { label: "Explain last log", prompt: "Summarize the last 20 lines of the openclaw-mcp log file and explain any errors or warnings." },
+  { label: "Explain last log", prompt: "Summarize the last 20 lines of the openclaw-molt-mcp log file and explain any errors or warnings." },
   { label: "Summarize security findings", prompt: "List and briefly explain the main security recommendations for running OpenClaw (gateway binding, skills, sandbox)." },
   { label: "OpenClaw vs Moltbook", prompt: "In 3 short bullets: what is OpenClaw, what is Moltbook, and how do they relate?" },
 ];

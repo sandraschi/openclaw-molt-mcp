@@ -1,27 +1,16 @@
 """Tests for clawd_sessions tool."""
 
-import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from openclaw_mcp.mcp_instance import mcp
-
-
-def _extract_tool_result(result: object) -> dict:
-    """Extract dict from ToolResult."""
-    if hasattr(result, "content") and result.content:
-        part = result.content[0]
-        text = getattr(part, "text", str(part))
-        if isinstance(text, str) and text.startswith("{"):
-            return json.loads(text)
-    return {}
+from tests.conftest import extract_tool_result
 
 
 @pytest.mark.asyncio
-async def test_clawd_sessions_list_success() -> None:
+async def test_clawd_sessions_list_success(mcp_client) -> None:
     """clawd_sessions list should return success with sessions."""
-    with patch("openclaw_mcp.tools.sessions.GatewayClient") as mock_gateway_class:
+    with patch("openclaw_molt_mcp.tools.sessions.GatewayClient") as mock_gateway_class:
         mock_client = MagicMock()
         mock_client.tools_invoke = AsyncMock(
             return_value={
@@ -33,11 +22,12 @@ async def test_clawd_sessions_list_success() -> None:
         mock_client.close = AsyncMock()
         mock_gateway_class.return_value = mock_client
 
-        result = await mcp.call_tool(
+        result = await mcp_client.call_tool(
             "clawd_sessions",
             arguments={"operation": "list", "session_key": "main"},
+            raise_on_error=False,
         )
-        data = _extract_tool_result(result)
+        data = extract_tool_result(result)
         assert data.get("success") is True
         mock_client.tools_invoke.assert_called_once_with(
             tool="sessions_list",
@@ -48,9 +38,9 @@ async def test_clawd_sessions_list_success() -> None:
 
 
 @pytest.mark.asyncio
-async def test_clawd_sessions_history() -> None:
+async def test_clawd_sessions_history(mcp_client) -> None:
     """clawd_sessions history should invoke sessions_history."""
-    with patch("openclaw_mcp.tools.sessions.GatewayClient") as mock_gateway_class:
+    with patch("openclaw_molt_mcp.tools.sessions.GatewayClient") as mock_gateway_class:
         mock_client = MagicMock()
         mock_client.tools_invoke = AsyncMock(
             return_value={"success": True, "data": {"messages": []}}
@@ -58,11 +48,12 @@ async def test_clawd_sessions_history() -> None:
         mock_client.close = AsyncMock()
         mock_gateway_class.return_value = mock_client
 
-        result = await mcp.call_tool(
+        result = await mcp_client.call_tool(
             "clawd_sessions",
             arguments={"operation": "history", "session_key": "main", "args": {"limit": 10}},
+            raise_on_error=False,
         )
-        data = _extract_tool_result(result)
+        data = extract_tool_result(result)
         assert data.get("success") is True
         mock_client.tools_invoke.assert_called_once_with(
             tool="sessions_history",

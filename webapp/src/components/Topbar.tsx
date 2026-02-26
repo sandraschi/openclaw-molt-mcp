@@ -31,7 +31,7 @@ export default function Topbar({
           <Menu className="h-5 w-5" />
         </button>
         <span className="font-mono text-lg font-semibold text-primary">
-          openclaw-mcp
+          openclaw-molt-mcp
         </span>
         <span className="hidden text-sm text-foreground-secondary sm:inline">
           OpenClaw + Moltbook

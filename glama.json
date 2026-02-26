@@ -1,7 +1,7 @@
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": ["sandraschi"],
-  "name": "openclaw-mcp",
+  "name": "openclaw-molt-mcp",
   "description": "MCP server + webapp bridging Cursor and Claude Desktop to OpenClaw and Moltbook. FastMCP 2.14+ tools: agent, sessions, channels, routing, skills, gateway, security, moltbook.",
   "type": "mcp-server + webapp",
   "status": "alpha",

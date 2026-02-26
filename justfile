@@ -1,4 +1,4 @@
-# openclaw-mcp justfile
+# openclaw-molt-mcp justfile
 
 default:
     just check
@@ -17,11 +17,11 @@ test:
     pytest tests -v
 
 test-cov:
-    pytest tests -v --cov=openclaw_mcp --cov-report=term-missing
+    pytest tests -v --cov=openclaw_molt_mcp --cov-report=term-missing
 
 typecheck:
     mypy src
 
-# MCPB package: copy src into mcpb then pack (current standard). Output: dist/openclaw-mcp-<version>.mcpb
+# MCPB package: copy src into mcpb then pack (current standard). Output: dist/openclaw-molt-mcp-<version>.mcpb
 mcpb:
     pwsh -NoProfile -File scripts/mcpb-build.ps1

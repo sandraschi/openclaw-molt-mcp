@@ -1,4 +1,4 @@
-# openclaw-mcp install - pip install from source, npm install in webapp
+# openclaw-molt-mcp install - pip install from source, npm install in webapp
 # Run from repo root or scripts/. One-time after clone.
 
 $ErrorActionPreference = "Stop"

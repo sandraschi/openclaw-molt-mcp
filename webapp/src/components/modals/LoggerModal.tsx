@@ -139,7 +139,7 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
         </div>
         {fetchError != null && (
           <div className="shrink-0 border-b border-border bg-muted/50 px-4 py-2 text-xs text-amber-400">
-            Server error: {fetchError}. Ensure the webapp API (port 5181) is running, or set a custom log URL (e.g. http://127.0.0.1:8765/api/logs after running: python -m openclaw_mcp.serve_logs).
+            Server error: {fetchError}. Ensure the webapp API (port 5181) is running, or set a custom log URL (e.g. http://127.0.0.1:8765/api/logs after running: python -m openclaw_molt_mcp.serve_logs).
           </div>
         )}
         <div className="flex-1 overflow-y-auto bg-background p-4 font-mono text-xs">
