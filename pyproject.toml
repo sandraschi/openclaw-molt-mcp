@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "openclaw-molt-mcp"
 version = "0.1.0"
-description = "FastMCP 2.14+ server for OpenClaw/Moltbook ecosystem integration"
+description = "FastMCP 3.1.0+ server for OpenClaw/Moltbook ecosystem integration"
 authors = [
     {name = "Sandraschi", email = "sandra@example.com"}
 ]

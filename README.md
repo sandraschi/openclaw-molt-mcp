@@ -1,5 +1,7 @@
 # openclaw-molt-mcp
 
+[![FastMCP Version](https://img.shields.io/badge/FastMCP-3.1.0-blue?style=flat-square&logo=python&logoColor=white)](https://github.com/sandraschi/fastmcp) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Linted with Biome](https://img.shields.io/badge/Linted_with-Biome-60a5fa?style=flat-square&logo=biome&logoColor=white)](https://biomejs.dev/) [![Built with Just](https://img.shields.io/badge/Built_with-Just-000000?style=flat-square&logo=gnu-bash&logoColor=white)](https://github.com/casey/just)
+
 [![Status](https://img.shields.io/badge/status-alpha-orange)](https://github.com/sandraschi/openclaw-molt-mcp)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-ecosystem-blue)](https://openclaw.ai)
 [![FastMCP](https://img.shields.io/badge/FastMCP-2.14+-blue)](https://github.com/jlowin/fastmcp)
@@ -12,7 +14,7 @@
 
 | Part | What it does |
 |------|----------------|
-| **MCP server** (stdio) | FastMCP 2.14+ tools: agent, sessions, channels, routing, skills, gateway, security, moltbook. For Cursor/Claude Desktop. |
+| **MCP server** (stdio) | FastMCP 3.1.0+ tools: agent, sessions, channels, routing, skills, gateway, security, moltbook. For Cursor/Claude Desktop. |
 | **Webapp** (React + Vite + Tailwind) | Dashboard on port 5180: Startpage, AI (Ollama), Channels, Routes, Diagram, Statistics, Moltbook, Integrations, Clawnews, Skills, Security, **Generate landing** (landing-site generator), Settings. |
 | **webapp_api** (FastAPI) | Backend on 5181: /api/ask, /api/gateway/status, /api/skills, /api/clawnews, /api/ollama/*, /api/channels, /api/routing, /api/openclaw/status, /api/landing-page. |
 
@@ -93,3 +95,14 @@ Add to your `claude_desktop_config.json`:
   }
 }
 ```
+
+
+## 🛡️ Industrial Quality Stack
+
+This project adheres to **SOTA 14.1** industrial standards for high-fidelity agentic orchestration:
+
+- **Python (Core)**: [Ruff](https://astral.sh/ruff) for linting and formatting. Zero-tolerance for `print` statements in core handlers (`T201`).
+- **Webapp (UI)**: [Biome](https://biomejs.dev/) for sub-millisecond linting. Strict `noConsoleLog` enforcement.
+- **Protocol Compliance**: Hardened `stdout/stderr` isolation to ensure crash-resistant JSON-RPC communication.
+- **Automation**: [Justfile](./justfile) recipes for all fleet operations (`just lint`, `just fix`, `just dev`).
+- **Security**: Automated audits via `bandit` and `safety`.
