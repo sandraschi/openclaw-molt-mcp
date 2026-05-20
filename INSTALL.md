@@ -7,6 +7,8 @@
 winget install Casey.Just    # Windows
 # scoop install just          # Windows (alternative)
 # brew install just           # macOS
+# sudo apt install just       # Debian/Ubuntu
+# cargo install just          # Linux (Rust)
 
 git clone https://github.com/sandraschi/openclaw-molt-mcp
 cd openclaw-molt-mcp
