@@ -1,4 +1,5 @@
-﻿Param([switch]$Headless)
+Param([switch]$Headless)
+$SkipFrontend = $Headless
 
 # --- SOTA Headless Standard ---
 if ($Headless -and ($Host.UI.RawUI.WindowTitle -notmatch 'Hidden')) {
@@ -35,6 +36,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", $backendCmd -Windo
 
 # 4. Run server (Vite dev)
 Write-Host "Starting Vite frontend on port $WebPort ..." -ForegroundColor Green
+if ($SkipFrontend) { return }
 npm run dev -- --port $WebPort --host
 
 

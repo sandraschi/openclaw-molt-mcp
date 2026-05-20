@@ -1,12 +1,12 @@
 # openclaw-molt-mcp
 
-[![FastMCP Version](https://img.shields.io/badge/FastMCP-3.1.0-blue?style=flat-square&logo=python&logoColor=white)](https://github.com/sandraschi/fastmcp) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Linted with Biome](https://img.shields.io/badge/Linted_with-Biome-60a5fa?style=flat-square&logo=biome&logoColor=white)](https://biomejs.dev/) [![Built with Just](https://img.shields.io/badge/Built_with-Just-000000?style=flat-square&logo=gnu-bash&logoColor=white)](https://github.com/casey/just)
-
-[![Status](https://img.shields.io/badge/status-alpha-orange)](https://github.com/sandraschi/openclaw-molt-mcp)
-[![OpenClaw](https://img.shields.io/badge/OpenClaw-ecosystem-blue)](https://openclaw.ai)
-[![FastMCP](https://img.shields.io/badge/FastMCP-2.14+-blue)](https://github.com/jlowin/fastmcp)
-[![Python](https://img.shields.io/badge/Python-3.11+-green)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://github.com/casey/just"><img src="https://img.shields.io/badge/just-ready_to_go-7c5cfc?style=flat-square&logo=just&logoColor=white" alt="Just"></a>
+  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.13+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://biomejs.dev"><img src="https://img.shields.io/badge/Linted_with-Biome-60a5fa?style=flat-square&logo=biome&logoColor=white" alt="Biome"></a>
+  <a href="https://github.com/PrefectHQ/fastmcp"><img src="https://img.shields.io/badge/FastMCP-3.2-7c5cfc?style=flat-square" alt="FastMCP"></a>
+</p>
 
 **MCP server + webapp** that bridge Cursor and Claude Desktop to **OpenClaw** and **Moltbook**. openclaw-molt-mcp *uses* those platforms (Gateway, APIs); it does not implement or replace them. Alpha. Ingest for LLMs: [gitingest.com/sandraschi/openclaw-molt-mcp](https://gitingest.com/sandraschi/openclaw-molt-mcp).
 
@@ -19,6 +19,21 @@
 | **webapp_api** (FastAPI) | Backend on 5181: /api/ask, /api/gateway/status, /api/skills, /api/clawnews, /api/ollama/*, /api/channels, /api/routing, /api/openclaw/status, /api/landing-page. |
 
 One place to run agents, manage channels/routes/skills, and use Moltbook; OpenClaw and Moltbook stay separate.
+
+## Quick Start
+
+```powershell
+git clone https://github.com/sandraschi/openclaw-molt-mcp
+cd openclaw-molt-mcp
+just
+```
+
+This opens an interactive dashboard showing all available commands. Run `just bootstrap` to install dependencies, then `just serve` or `just dev` to start.
+
+### Manual Setup
+
+If you don't have `just` installed:
+
 
 ## Install & run
 
