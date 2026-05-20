@@ -1,8 +1,83 @@
-# Install & run – openclaw-molt-mcp
+# Installation
+
+## 🚀 Quick Start (recommended)
+
+```powershell
+git clone https://github.com/sandraschi/openclaw-molt-mcp
+cd openclaw-molt-mcp
+just
+```
+
+The interactive recipe dashboard opens in your browser. From there:
+
+```powershell
+just bootstrap   # install all dependencies
+just serve       # start the server
+just web         # start the frontend (if applicable)
+```
+
+> **Why not `pip install`?** MCP servers bundle webapps, configs, project scaffolding, and tooling that a flat Python package can't deliver. PyPI offers no safety advantage — it doesn't audit packages either. `just` gives you the complete, ready-to-run stack.
+
+---
+
+## 🐌 Traditional Setup
+
+If you prefer not to use `just`:
+
+1. Install [Python 3.13+](https://python.org) and [uv](https://docs.astral.sh/uv/)
+2. Clone and enter the repo:
+   ```powershell
+   git clone https://github.com/sandraschi/openclaw-molt-mcp
+   cd openclaw-molt-mcp
+   ```
+3. Install dependencies:
+   ```powershell
+   uv sync --all-extras
+   ```
+4. Start the server:
+   ```powershell
+   # stdio mode (for MCP clients like Claude Desktop)
+   uv run python -m openclaw_molt_mcp.server
+
+   # HTTP mode (for web dashboard)
+   uv run uvicorn openclaw_molt_mcp.server:app --port 10765
+   ```
+
+4. (optional) Start the frontend:
+   ```powershell
+   cd webapp
+   npm install
+   npm run dev
+   ```
+
+5. Open `http://localhost:10765` or the frontend URL.
+
+---
+
+## ❓ Troubleshooting
+
+| Issue | Fix |
+|---|---|
+| `just` not found | Install via `winget install Casey.Just`, `scoop install just`, or `brew install just` |
+| Port conflict | Run `just kill-all` to clear fleet ports (10700–11000) |
+| Dependencies out of sync | `uv sync --all-extras` |
+| Something else | [Open a GitHub issue](https://github.com/sandraschi/openclaw-molt-mcp/issues) |
+
+---
+
+*See the main [README](README.md) for feature overview and documentation.
+
+---
+
+## Legacy Documentation
+
+_This INSTALL.md was updated with the standard fleet Quick Start template. The original instructions are preserved below._
+
+# Install & run ÔÇô openclaw-molt-mcp
 
 **MCP server (stdio)** and **webapp (React dashboard)**. Both use OpenClaw Gateway and Moltbook; install OpenClaw separately.
 
-**Clone-based** – no PyPI package yet. Clone, run scripts, done.
+**Clone-based** ÔÇô no PyPI package yet. Clone, run scripts, done.
 
 ## Quick start
 
@@ -104,8 +179,8 @@ Or `scripts\check.bat` if present. Runs ruff, mypy, pytest.
 
 If you want to stop using OpenClaw or remove it (e.g. after reading security advisories or deciding it is not for you):
 
-1. **Stop the Gateway** – Quit any running OpenClaw process (Gateway, Pi agent). Close the terminal or stop the service that runs `openclaw` or the Gateway.
-2. **Disconnect openclaw-molt-mcp** – So this app stops talking to OpenClaw:
+1. **Stop the Gateway** ÔÇô Quit any running OpenClaw process (Gateway, Pi agent). Close the terminal or stop the service that runs `openclaw` or the Gateway.
+2. **Disconnect openclaw-molt-mcp** ÔÇô So this app stops talking to OpenClaw:
    - **MCP**: Remove or comment out the openclaw-molt-mcp server from your Cursor/Claude Desktop MCP config. Unset `OPENCLAW_GATEWAY_URL` and `OPENCLAW_GATEWAY_TOKEN` in the environment that starts the MCP server (e.g. in your shell profile or the config that launches the server).
    - **Webapp**: Unset `OPENCLAW_GATEWAY_URL` and `OPENCLAW_GATEWAY_TOKEN` in the environment where you run the webapp (e.g. before running `start.ps1`), then restart.
 3. **Uninstall the OpenClaw CLI** (optional, full removal):
@@ -123,8 +198,8 @@ After this, openclaw-molt-mcp will no longer reach OpenClaw; Gateway-dependent f
 openclaw-molt-mcp requires the OpenClaw platform to be installed separately. Choose an installation method based on your security requirements:
 
 - **Method 1 (Docker)**: Fast setup, moderate security
-- **Method 2 (VirtualBox + Docker)**: ✅ **RECOMMENDED** - Maximum security, complete isolation
-- **Method 3 (Naked install)**: ⚠️ **NOT RECOMMENDED** - No sandboxing
+- **Method 2 (VirtualBox + Docker)**: Ô£à **RECOMMENDED** - Maximum security, complete isolation
+- **Method 3 (Naked install)**: ÔÜá´©Å **NOT RECOMMENDED** - No sandboxing
 
 ---
 
@@ -167,7 +242,7 @@ Access OpenClaw: `http://localhost:18789?token=YOUR_TOKEN`
 
 ---
 
-### Installation Method 2: VirtualBox + Docker ✅ RECOMMENDED
+### Installation Method 2: VirtualBox + Docker Ô£à RECOMMENDED
 
 **Complete Step-by-Step Guide**: See [docs/INSTALL_VIRTUALBOX.md](docs/INSTALL_VIRTUALBOX.md)
 
@@ -182,7 +257,7 @@ For maximum security, run OpenClaw inside a **VirtualBox VM** with Docker. This 
 - ~50 minutes total setup time
 
 **What You Get:**
-- **Double isolation**: Container → VM → Host
+- **Double isolation**: Container ÔåÆ VM ÔåÆ Host
 - **Network security**: Host-Only adapter for local access, Tailscale for remote
 - **Easy recovery**: VM snapshots for instant rollback
 - **Peace of mind**: Agent cannot access your host filesystem
@@ -247,14 +322,14 @@ sudo ufw enable
 
 ---
 
-### Installation Method 3: Naked Install ⚠️ NOT RECOMMENDED
+### Installation Method 3: Naked Install ÔÜá´©Å NOT RECOMMENDED
 
 Installing OpenClaw directly on your host OS (via `npm install -g openclaw` or install script) provides **no sandboxing** and exposes your system to:
 
-- ❌ Full filesystem access
-- ❌ Shell command execution with your user permissions
-- ❌ CVE-2026-25253 RCE vulnerability
-- ❌ Malicious skills from ClawHub marketplace
+- ÔØî Full filesystem access
+- ÔØî Shell command execution with your user permissions
+- ÔØî CVE-2026-25253 RCE vulnerability
+- ÔØî Malicious skills from ClawHub marketplace
 
 If you must use naked install:
 
