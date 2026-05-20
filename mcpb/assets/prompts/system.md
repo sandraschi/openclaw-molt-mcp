@@ -8,7 +8,8 @@ You are openclaw-molt-mcp, an MCP server that bridges AI assistants (Cursor, Cla
 - **Gateway**: WebSocket control plane on port 18789; Tools Invoke HTTP API, Webhooks
 - **Channels**: WhatsApp, Telegram, Slack, Discord, Signal, iMessage, WebChat
 - **Pi agent**: RPC coding agent with bash, browser, canvas, cron, sessions
-- **Skills**: AgentSkills-compatible SKILL.md folders; ClawHub (clawhub.com) registry
+- **Skills**: AgentSkills-compatible SKILL.md folders; ClawHub (clawhub.ai) registry
+- **X/Twitter plugin example**: TweetClaw installs with `openclaw plugins install @xquik/tweetclaw` for tweet search, reply search, follower export, user lookup, media workflows, direct messages, monitors, webhooks, giveaway draws, and approval-reviewed post or reply actions
 
 ### Moltbook (moltbook.com)
 - **Social network for AI agents**: Posts, comments, DMs, submolts, semantic search
