@@ -331,10 +331,14 @@ function Resolve-FleetPortConflict {
 
     $liveBlockers = @()
     $ghostBlockers = @()
+    $mySession = (Get-Process -Id $PID).SessionId
+    $hasCrossSession = $false
+
     foreach ($entry in $still.GetEnumerator()) {
         foreach ($procId in $entry.Value) {
             $brief = Get-FleetProcessBrief -ProcessId $procId
             if ($brief) {
+                if ($brief.SessionId -ne $mySession) { $hasCrossSession = $true }
                 $liveBlockers += "port $($entry.Key) $($brief.Name) PID $procId (session $($brief.SessionId))"
             } elseif ($null -ne (Get-Process -Id $procId -ErrorAction SilentlyContinue)) {
                 $liveBlockers += "port $($entry.Key) PID $procId"

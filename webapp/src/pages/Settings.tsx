@@ -17,6 +17,10 @@ export default function SettingsPage() {
   const [pullName, setPullName] = useState("");
   const [pullLoading, setPullLoading] = useState(false);
   const [deletingModel, setDeletingModel] = useState<string | null>(null);
+  const [llmProviders, setLlmProviders] = useState<Record<string, {name:string}[]>>({});
+  const [selectedProvider, setSelectedProvider] = useState("ollama");
+  const [selectedModel, setSelectedModel] = useState("");
+  const [llmStatus, setLlmStatus] = useState<"loading"|"ready"|"error">("loading");
   const { addLog } = useLog();
 
   useEffect(() => {
@@ -49,6 +53,39 @@ export default function SettingsPage() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    fetch("/api/llm/providers").then(r => r.json()).then(d => {
+      setLlmProviders(d);
+      const savedP = localStorage.getItem("llm_provider") || "ollama";
+      const savedM = localStorage.getItem("llm_model") || "";
+      setSelectedProvider(savedP);
+      const models = d[savedP === "ollama" ? "ollama" : "lm_studio"] || [];
+      setSelectedModel(savedM && models.some((m:{name:string}) => m.name === savedM) ? savedM : (models[0]?.name || ""));
+      setLlmStatus(models.length > 0 ? "ready" : "error");
+    }).catch(() => {
+      setLlmProviders({ ollama: [{name:"llama3.2:3b"}] });
+      setSelectedModel(localStorage.getItem("llm_model") || "llama3.2:3b");
+      setLlmStatus("ready");
+    });
+  }, []);
+
+  const saveLlmChoice = (p: string, m: string) => {
+    localStorage.setItem("llm_provider", p);
+    localStorage.setItem("llm_model", m);
+  };
+
+  const handleProviderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedProvider(e.target.value);
+    saveLlmChoice(e.target.value, "");
+  };
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedModel(e.target.value);
+    saveLlmChoice(selectedProvider, e.target.value);
+  };
+
+  const llmModels = llmProviders[selectedProvider === "ollama" ? "ollama" : "lm_studio"] || [];
 
   async function handlePull() {
     const name = pullName.trim();
@@ -184,6 +221,26 @@ export default function SettingsPage() {
               {pullLoading ? "Pulling..." : "Pull"}
             </button>
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-lg border border-border bg-card p-6">
+        <h2 className="font-mono text-xl font-semibold text-foreground">Local LLM</h2>
+        <p className="mt-1 text-sm text-foreground-secondary">Select provider and model for AI features.</p>
+        <div className="mt-4 space-y-3">
+          <select className="w-full rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            value={selectedProvider}
+            onChange={handleProviderChange}>
+            <option value="ollama">Ollama</option>
+            <option value="lm_studio">LM Studio</option>
+          </select>
+          <select className="w-full rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            value={selectedModel}
+            onChange={handleModelChange}>
+            {llmStatus === "loading" && <option>Loading...</option>}
+            {llmStatus === "error" && <option value="">Unavailable</option>}
+            {llmModels.map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
+          </select>
         </div>
       </section>
 

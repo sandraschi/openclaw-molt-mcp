@@ -1,8 +1,8 @@
-param(
+﻿param(
     [switch]$Headless,
     [switch]$BackendOnly,
-    [switch]$NoBrowser,
-    [switch]$ReuseIfRunning)
+    [switch]$NoBrowser
+)
 
 $WebPort = 10764
 $BackendPort = 10765
@@ -16,21 +16,9 @@ if (-not (Test-Path -LiteralPath $FleetStartPath)) {
 . $FleetStartPath
 $FleetStart = Initialize-FleetStartMode @PSBoundParameters
 Enter-FleetHeadlessConsole -Headless:$Headless -BackendOnly:$BackendOnly
+Stop-FleetPortSquatters -Ports @($WebPort, $BackendPort) -Label "openclaw-molt-mcp"
 
-$portResolve = @{
-    Ports      = @($WebPort, $BackendPort)
-    Label      = "openclaw-molt-mcp"
-    AllowReuse = $ReuseIfRunning
-}
-if ($ReuseIfRunning) {
-    $portResolve.HealthChecks = @{
-        $WebPort = "http://127.0.0.1:$WebPort/"
-        $BackendPort = "http://127.0.0.1:$BackendPort/api/health"
-    }
-}
-$portState = Resolve-FleetPortConflict @portResolve
-if ($portState.Action -eq 'Blocked') { exit 1 }
-if ($portState.Reuse) { return }
+if (-not (Assert-FleetPortsAvailable -Ports @($WebPort, $BackendPort) -Label "openclaw-molt-mcp")) { exit 1 }
 
 Set-Location $PSScriptRoot
 if (-not (Test-Path "node_modules")) { npm install }

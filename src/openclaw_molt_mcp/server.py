@@ -43,3 +43,6 @@ if os.environ.get("CLAWD_MOUNT_VBOX", "").lower() in ("1", "true", "yes"):
             exc_info=True,
             extra={"tool": "server", "operation": "mount", "error_type": type(e).__name__},
         )
+
+# ASGI app for uvicorn (webapp proxy / fleet probe)
+app = mcp.http_app()
