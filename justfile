@@ -1,4 +1,5 @@
-﻿set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
+import 'scripts/just/fleet.just'
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
@@ -41,21 +42,26 @@ stats:
     uv run python tools/repo_stats.py
 
 check:
-    ruff check src tests
-    ruff format --check src tests
-    mypy src
-    pytest tests -v
+    uv run ruff check src tests
+    uv run ruff format --check src tests
+    uv run mypy src
+    uv run pytest tests -v
 
 test:
-    pytest tests -v
+    uv run pytest tests -v
 
 test-cov:
-    pytest tests -v --cov=openclaw_molt_mcp --cov-report=term-missing
+    uv run pytest tests -v --cov=openclaw_molt_mcp --cov-report=term-missing
 
 typecheck:
-    mypy src
+    uv run mypy src
 
 # MCPB package: copy src into mcpb then pack (current standard). Output: dist/openclaw-molt-mcp-<version>.mcpb
 mcpb:
-    pwsh -NoProfile -File scripts/mcpb-build.ps1
+    powershell.exe -NoProfile -File scripts/mcpb-build.ps1
 
+# Bootstrap: install dev deps + pre-commit hook
+bootstrap:
+    uv sync --group dev
+    uv run pre-commit install
+    Write-Host "Pre-commit hooks installed." -ForegroundColor Green
