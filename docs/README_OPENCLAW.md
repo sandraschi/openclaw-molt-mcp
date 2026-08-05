@@ -53,7 +53,15 @@ RPC-mode coding agent ([badlogic/pi-mono](https://github.com/badlogic/pi-mono)).
 
 ### Skills
 
-AgentSkills-compatible modules. Each skill is a folder with `SKILL.md` (YAML frontmatter + Markdown body). **ClawHub** (clawhub.com) is the public registry—565+ skills. Install: `clawhub install <slug>`.
+AgentSkills-compatible modules. Each skill is a folder with `SKILL.md` (YAML frontmatter + Markdown body). **ClawHub** (clawhub.ai) is the public registry with 565+ skills. Install: `clawhub install <slug>`.
+
+For X/Twitter workflows, install [TweetClaw](https://github.com/Xquik-dev/tweetclaw) as a native OpenClaw plugin:
+
+```bash
+openclaw plugins install @xquik/tweetclaw
+```
+
+TweetClaw covers tweet search, reply search, follower export, user lookup, media workflows, direct messages, monitors, webhooks, giveaway draws, and approval-reviewed post or reply actions through Xquik. Keep API keys in OpenClaw plugin config, not in MCP client config snippets.
 
 ## Install
 
@@ -100,7 +108,7 @@ OpenClaw handles voice input in its own pipeline (voice notes, Talk mode, Voice 
 - [openclaw.ai](https://openclaw.ai)
 - [docs.openclaw.ai](https://docs.openclaw.ai)
 - [docs.clawd.bot](https://docs.clawd.bot)
-- [clawhub.com](https://clawhub.com)
+- [clawhub.ai](https://clawhub.ai)
 - [Tools Invoke API](https://docs.clawd.bot/gateway/tools-invoke-http-api)
 - [OpenClaw TTS](https://docs.clawd.bot/tts)
 - [Audio and voice notes](https://docs.clawd.bot/nodes/audio)

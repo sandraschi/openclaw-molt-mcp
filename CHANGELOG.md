@@ -2,6 +2,12 @@
 
 All notable changes to openclaw-molt-mcp will be documented in this file.
 
+## Unreleased
+
+### Changed
+
+- Updated ClawHub references to `clawhub.ai` and documented TweetClaw as an optional OpenClaw plugin for X/Twitter workflows.
+
 ## [0.2.1] - 2026-02-06
 
 ### Security
