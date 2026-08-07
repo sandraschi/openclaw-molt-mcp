@@ -6,6 +6,7 @@ import {
     Settings,
     ChevronLeft,
     ChevronRight,
+    ScrollText,
     Server
 } from 'lucide-react';
 
@@ -20,6 +21,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     const navItems = [
         { href: '/', label: 'Overview', icon: LayoutDashboard },
         { href: '/chat', label: 'AI Command', icon: Bot },
+        { href: '/logs', label: 'Logs', icon: ScrollText },
         { href: '/settings', label: 'Settings', icon: Settings },
     ];
 

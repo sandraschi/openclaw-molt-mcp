@@ -2,18 +2,16 @@
 
 import json
 from pathlib import Path
-from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 import pytest_asyncio
-
 from fastmcp.client import Client
-from openclaw_molt_mcp.config import Settings
-from openclaw_molt_mcp.mcp_instance import mcp
 
 # Import server to register tools before Client connects
 from openclaw_molt_mcp import server  # noqa: F401
+from openclaw_molt_mcp.config import Settings
+from openclaw_molt_mcp.mcp_instance import mcp
 
 
 def extract_tool_result(result: object) -> dict:

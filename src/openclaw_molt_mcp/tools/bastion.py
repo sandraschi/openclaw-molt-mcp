@@ -9,9 +9,8 @@ from typing import Literal
 
 from fastmcp import Context
 
-from openclaw_molt_mcp.mcp_instance import mcp
-
 from openclaw_molt_mcp.config import Settings
+from openclaw_molt_mcp.mcp_instance import mcp
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,8 @@ def _find_config(workspace_path: Path | None) -> Path | None:
             base / "clawdbot.json",
             base.parent / "openclaw.json",
             base.parent / "clawdbot.json",
-        ] + paths
+            *paths,
+        ]
     for p in paths:
         if p.exists():
             return p

@@ -7,7 +7,19 @@ import sys
 from openclaw_molt_mcp.config import Settings
 from openclaw_molt_mcp.logging_config import setup_logging
 from openclaw_molt_mcp.mcp_instance import mcp
-from openclaw_molt_mcp.tools import agent, bastion, channels, gateway, moltbook, openclaw_remove, routing, security, sessions, skills, voice  # noqa: F401 -- register tools
+from openclaw_molt_mcp.tools import (  # noqa: F401 -- register tools
+    agent,
+    bastion,
+    channels,
+    gateway,
+    moltbook,
+    openclaw_remove,
+    routing,
+    security,
+    sessions,
+    skills,
+    voice,
+)
 
 _settings = Settings()
 setup_logging(_settings)
@@ -45,4 +57,4 @@ if os.environ.get("CLAWD_MOUNT_VBOX", "").lower() in ("1", "true", "yes"):
         )
 
 # ASGI app for uvicorn (webapp proxy / fleet probe)
-app = mcp.http_app()
+app = mcp.http_app(path="/")

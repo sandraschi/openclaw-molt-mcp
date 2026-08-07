@@ -4,7 +4,7 @@ import json
 import logging
 import logging.handlers
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from openclaw_molt_mcp.config import Settings
@@ -13,7 +13,7 @@ from openclaw_molt_mcp.config import Settings
 def _structured_record(record: logging.LogRecord) -> str:
     """Format a log record as a single-line JSON object for file output."""
     payload: dict = {
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "ts": datetime.now(UTC).isoformat(),
         "level": record.levelname,
         "logger": record.name,
         "msg": record.getMessage(),

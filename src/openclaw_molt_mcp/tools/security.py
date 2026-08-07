@@ -1,19 +1,18 @@
 """clawd_security: OpenClaw hardening and audit operations."""
 
 import asyncio
-import os
 import json
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Literal
 
 from fastmcp import Context
 
-from openclaw_molt_mcp.mcp_instance import mcp
-
 from openclaw_molt_mcp.config import Settings
 from openclaw_molt_mcp.gateway_client import GatewayClient
+from openclaw_molt_mcp.mcp_instance import mcp
 
 logger = logging.getLogger(__name__)
 
@@ -136,13 +135,9 @@ async def _audit(ctx: Context, settings: Settings) -> dict:
     try:
         result = await client.tools_invoke(tool="sessions_list", args={})
         if not result.get("success"):
-            findings.append(
-                {"id": "gateway_unreachable", "severity": "critical", "title": "Gateway unreachable"}
-            )
+            findings.append({"id": "gateway_unreachable", "severity": "critical", "title": "Gateway unreachable"})
         else:
-            findings.append(
-                {"id": "gateway_reachable", "severity": "info", "title": "Gateway reachable"}
-            )
+            findings.append({"id": "gateway_reachable", "severity": "info", "title": "Gateway reachable"})
     except Exception as e:
         logger.error(
             "clawd_security audit gateway check failed: %s",
@@ -150,24 +145,18 @@ async def _audit(ctx: Context, settings: Settings) -> dict:
             extra={"tool": "clawd_security", "operation": "audit", "error_type": type(e).__name__},
             exc_info=True,
         )
-        findings.append(
-            {"id": "gateway_error", "severity": "critical", "title": f"Gateway error: {e}"}
-        )
+        findings.append({"id": "gateway_error", "severity": "critical", "title": f"Gateway error: {e}"})
     finally:
         await client.close()
 
     if settings.gateway_token:
         findings.append({"id": "token_set", "severity": "info", "title": "Bearer token configured"})
     else:
-        findings.append(
-            {"id": "no_token", "severity": "medium", "title": "No OPENCLAW_GATEWAY_TOKEN set"}
-        )
+        findings.append({"id": "no_token", "severity": "medium", "title": "No OPENCLAW_GATEWAY_TOKEN set"})
 
     url = settings.gateway_url
-    if "0.0.0.0" in url or ":18789" in url and "127.0.0.1" not in url:
-        findings.append(
-            {"id": "bind_exposed", "severity": "high", "title": "Gateway may be bound to 0.0.0.0"}
-        )
+    if "0.0.0.0" in url or (":18789" in url and "127.0.0.1" not in url):
+        findings.append({"id": "bind_exposed", "severity": "high", "title": "Gateway may be bound to 0.0.0.0"})
     elif "127.0.0.1" in url or "localhost" in url:
         findings.append({"id": "bind_loopback", "severity": "info", "title": "Gateway URL is loopback"})
 
@@ -178,19 +167,39 @@ async def _audit(ctx: Context, settings: Settings) -> dict:
             name = resolved.name.lower()
             if name not in ("openclaw", "openclaw.exe"):
                 findings.append(
-                    {"id": "openclaw_path_rejected", "severity": "high", "title": "openclaw_path must be 'openclaw' or allowlisted path"}
+                    {
+                        "id": "openclaw_path_rejected",
+                        "severity": "high",
+                        "title": "openclaw_path must be 'openclaw' or allowlisted path",
+                    }
                 )
-                return {"success": True, "message": "Audit skipped: invalid openclaw_path.", "data": {"findings": findings}}
+                return {
+                    "success": True,
+                    "message": "Audit skipped: invalid openclaw_path.",
+                    "data": {"findings": findings},
+                }
             parent_str = str(resolved.parent).replace("\\", "/")
             allowed = any(parent_str.startswith(p.replace("\\", "/")) for p in ALLOWED_OPENCLAW_PREFIXES)
             if not allowed and not parent_str.startswith(str(Path.home()).replace("\\", "/")):
                 findings.append(
-                    {"id": "openclaw_path_rejected", "severity": "high", "title": "openclaw_path outside allowlisted directories"}
+                    {
+                        "id": "openclaw_path_rejected",
+                        "severity": "high",
+                        "title": "openclaw_path outside allowlisted directories",
+                    }
                 )
-                return {"success": True, "message": "Audit skipped: invalid openclaw_path.", "data": {"findings": findings}}
+                return {
+                    "success": True,
+                    "message": "Audit skipped: invalid openclaw_path.",
+                    "data": {"findings": findings},
+                }
         elif path not in ALLOWED_OPENCLAW_NAMES and (os.path.isabs(path) or os.path.sep in path):
             findings.append(
-                {"id": "openclaw_path_rejected", "severity": "high", "title": "openclaw_path must be 'openclaw' or valid allowlisted path"}
+                {
+                    "id": "openclaw_path_rejected",
+                    "severity": "high",
+                    "title": "openclaw_path must be 'openclaw' or valid allowlisted path",
+                }
             )
             return {"success": True, "message": "Audit skipped: invalid openclaw_path.", "data": {"findings": findings}}
     try:

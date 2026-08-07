@@ -5,10 +5,9 @@ from typing import Literal
 
 from fastmcp import Context
 
-from openclaw_molt_mcp.mcp_instance import mcp
-
-from openclaw_molt_mcp.gateway_client import GatewayClient
 from openclaw_molt_mcp.config import Settings
+from openclaw_molt_mcp.gateway_client import GatewayClient
+from openclaw_molt_mcp.mcp_instance import mcp
 
 logger = logging.getLogger(__name__)
 

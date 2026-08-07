@@ -1,9 +1,7 @@
 """Basic server tests."""
 
-import pytest
-
-from openclaw_molt_mcp.mcp_instance import mcp
 from openclaw_molt_mcp import __version__
+from openclaw_molt_mcp.mcp_instance import mcp
 
 
 def test_mcp_instance_exists() -> None:

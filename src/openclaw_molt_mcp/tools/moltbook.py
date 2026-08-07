@@ -5,9 +5,8 @@ from typing import Literal
 
 from fastmcp import Context
 
-from openclaw_molt_mcp.mcp_instance import mcp
-
 from openclaw_molt_mcp.config import Settings
+from openclaw_molt_mcp.mcp_instance import mcp
 from openclaw_molt_mcp.moltbook_client import MoltbookClient
 
 logger = logging.getLogger(__name__)

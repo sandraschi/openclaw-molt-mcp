@@ -1,7 +1,6 @@
 """clawd_channels: OpenClaw channel visibility and messaging (WhatsApp, Telegram, Discord, etc.)."""
 
 import logging
-from pathlib import Path
 from typing import Any, Literal
 
 from fastmcp import Context

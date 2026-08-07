@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API_BASE } from "../lib/api";
 import { cn } from "../utils/cn";
 import {
   fetchOllamaConfig,
@@ -55,7 +56,7 @@ export default function SettingsPage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/llm/providers").then(r => r.json()).then(d => {
+    fetch(API_BASE + "/api/llm/providers").then(r => r.json()).then(d => {
       setLlmProviders(d);
       const savedP = localStorage.getItem("llm_provider") || "ollama";
       const savedM = localStorage.getItem("llm_model") || "";

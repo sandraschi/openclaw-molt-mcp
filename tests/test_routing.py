@@ -46,9 +46,7 @@ async def test_clawd_routing_get_routing_rules_fallback(mcp_client, tmp_path: Pa
     )
     with patch("openclaw_molt_mcp.tools.routing.GatewayClient") as mock_gateway_class:
         mock_client = MagicMock()
-        mock_client.tools_invoke = AsyncMock(
-            return_value={"success": False, "message": "Unknown tool"}
-        )
+        mock_client.tools_invoke = AsyncMock(return_value={"success": False, "message": "Unknown tool"})
         mock_client.close = AsyncMock()
         mock_gateway_class.return_value = mock_client
     with patch("openclaw_molt_mcp.tools.routing.Settings") as mock_settings_class:

@@ -35,7 +35,7 @@ async def clawd_skills(
     Skills live in workspace/skills/ or ~/.openclaw/workspace/skills/.
     ClawHub (clawhub.com) is the public skills registry.
     """
-    settings = Settings()
+    Settings()
     base = Path(workspace_path) if workspace_path else Path.home() / ".openclaw" / "workspace"
     skills_dir = base / "skills"
     logger.info(

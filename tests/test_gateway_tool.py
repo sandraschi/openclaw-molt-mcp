@@ -12,9 +12,7 @@ async def test_clawd_gateway_status_success(mcp_client) -> None:
     """clawd_gateway status should return success when Tools Invoke succeeds."""
     with patch("openclaw_molt_mcp.tools.gateway.GatewayClient") as mock_gateway_class:
         mock_client = MagicMock()
-        mock_client.tools_invoke = AsyncMock(
-            return_value={"success": True, "data": {"sessions": []}}
-        )
+        mock_client.tools_invoke = AsyncMock(return_value={"success": True, "data": {"sessions": []}})
         mock_client.close = AsyncMock()
         mock_gateway_class.return_value = mock_client
 
@@ -33,9 +31,7 @@ async def test_clawd_gateway_status_failure(mcp_client) -> None:
     """clawd_gateway status should return failure when Tools Invoke fails."""
     with patch("openclaw_molt_mcp.tools.gateway.GatewayClient") as mock_gateway_class:
         mock_client = MagicMock()
-        mock_client.tools_invoke = AsyncMock(
-            return_value={"success": False, "message": "Connection refused"}
-        )
+        mock_client.tools_invoke = AsyncMock(return_value={"success": False, "message": "Connection refused"})
         mock_client.close = AsyncMock()
         mock_gateway_class.return_value = mock_client
 

@@ -13,7 +13,6 @@ from urllib.parse import parse_qs, urlparse
 
 from openclaw_molt_mcp.logging_config import get_log_file_path
 
-
 SENSITIVE_KEYS = frozenset(
     {"token", "password", "api_key", "secret", "authorization", "cookie", "credential", "bearer"}
 )
@@ -86,7 +85,7 @@ class LogsHandler(BaseHTTPRequestHandler):
             return
         params = parse_qs(parsed.query)
         tail = 500
-        if "tail" in params and params["tail"]:
+        if params.get("tail"):
             try:
                 tail = max(1, min(10000, int(params["tail"][0])))
             except ValueError:
@@ -105,7 +104,12 @@ class LogsHandler(BaseHTTPRequestHandler):
         pass
 
 
-DEFAULT_CORS_ORIGINS = ("http://localhost:5180", "http://127.0.0.1:5180", "http://localhost:5181", "http://127.0.0.1:5181")
+DEFAULT_CORS_ORIGINS = (
+    "http://localhost:5180",
+    "http://127.0.0.1:5180",
+    "http://localhost:5181",
+    "http://127.0.0.1:5181",
+)
 
 
 def main() -> None:

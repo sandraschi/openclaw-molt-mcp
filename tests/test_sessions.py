@@ -42,9 +42,7 @@ async def test_clawd_sessions_history(mcp_client) -> None:
     """clawd_sessions history should invoke sessions_history."""
     with patch("openclaw_molt_mcp.tools.sessions.GatewayClient") as mock_gateway_class:
         mock_client = MagicMock()
-        mock_client.tools_invoke = AsyncMock(
-            return_value={"success": True, "data": {"messages": []}}
-        )
+        mock_client.tools_invoke = AsyncMock(return_value={"success": True, "data": {"messages": []}})
         mock_client.close = AsyncMock()
         mock_gateway_class.return_value = mock_client
 
