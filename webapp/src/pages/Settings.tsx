@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useLog } from "../context/LogContext";
 import { API_BASE } from "../lib/api";
-import { cn } from "../utils/cn";
 import {
   fetchOllamaConfig,
   fetchOllamaHealth,
   fetchOllamaTags,
-  ollamaPull,
-  ollamaDelete,
   type OllamaModelInfo,
+  ollamaDelete,
+  ollamaPull,
 } from "../services/api";
-import { useLog } from "../context/LogContext";
+import { cn } from "../utils/cn";
 
 export default function SettingsPage() {
   const [ollamaOk, setOllamaOk] = useState<boolean | null>(null);
@@ -18,10 +18,10 @@ export default function SettingsPage() {
   const [pullName, setPullName] = useState("");
   const [pullLoading, setPullLoading] = useState(false);
   const [deletingModel, setDeletingModel] = useState<string | null>(null);
-  const [llmProviders, setLlmProviders] = useState<Record<string, {name:string}[]>>({});
+  const [llmProviders, setLlmProviders] = useState<Record<string, { name: string }[]>>({});
   const [selectedProvider, setSelectedProvider] = useState("ollama");
   const [selectedModel, setSelectedModel] = useState("");
-  const [llmStatus, setLlmStatus] = useState<"loading"|"ready"|"error">("loading");
+  const [llmStatus, setLlmStatus] = useState<"loading" | "ready" | "error">("loading");
   const { addLog } = useLog();
 
   useEffect(() => {
@@ -56,19 +56,26 @@ export default function SettingsPage() {
   }, []);
 
   useEffect(() => {
-    fetch(API_BASE + "/api/llm/providers").then(r => r.json()).then(d => {
-      setLlmProviders(d);
-      const savedP = localStorage.getItem("llm_provider") || "ollama";
-      const savedM = localStorage.getItem("llm_model") || "";
-      setSelectedProvider(savedP);
-      const models = d[savedP === "ollama" ? "ollama" : "lm_studio"] || [];
-      setSelectedModel(savedM && models.some((m:{name:string}) => m.name === savedM) ? savedM : (models[0]?.name || ""));
-      setLlmStatus(models.length > 0 ? "ready" : "error");
-    }).catch(() => {
-      setLlmProviders({ ollama: [{name:"llama3.2:3b"}] });
-      setSelectedModel(localStorage.getItem("llm_model") || "llama3.2:3b");
-      setLlmStatus("ready");
-    });
+    fetch(`${API_BASE}/api/llm/providers`)
+      .then((r) => r.json())
+      .then((d) => {
+        setLlmProviders(d);
+        const savedP = localStorage.getItem("llm_provider") || "ollama";
+        const savedM = localStorage.getItem("llm_model") || "";
+        setSelectedProvider(savedP);
+        const models = d[savedP === "ollama" ? "ollama" : "lm_studio"] || [];
+        setSelectedModel(
+          savedM && models.some((m: { name: string }) => m.name === savedM)
+            ? savedM
+            : models[0]?.name || "",
+        );
+        setLlmStatus(models.length > 0 ? "ready" : "error");
+      })
+      .catch(() => {
+        setLlmProviders({ ollama: [{ name: "llama3.2:3b" }] });
+        setSelectedModel(localStorage.getItem("llm_model") || "llama3.2:3b");
+        setLlmStatus("ready");
+      });
   }, []);
 
   const saveLlmChoice = (p: string, m: string) => {
@@ -129,20 +136,17 @@ export default function SettingsPage() {
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Settings
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Settings</h1>
         <p className="mt-2 text-foreground-secondary">
           Ollama models, gateway URL, API keys, and other configuration.
         </p>
       </section>
 
       <section className="rounded-lg border border-border bg-card p-6">
-        <h2 className="font-mono text-xl font-semibold text-foreground">
-          Ollama
-        </h2>
+        <h2 className="font-mono text-xl font-semibold text-foreground">Ollama</h2>
         <p className="mt-1 text-sm text-foreground-secondary">
-          Local LLM models. Used by the AI page for quick prompt and chat. Requires Ollama running (e.g. localhost:11434).
+          Local LLM models. Used by the AI page for quick prompt and chat. Requires Ollama running
+          (e.g. localhost:11434).
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <span
@@ -152,7 +156,7 @@ export default function SettingsPage() {
                 ? "bg-muted text-foreground-secondary"
                 : ollamaOk
                   ? "bg-green-900/40 text-green-300"
-                  : "bg-red-900/40 text-red-300"
+                  : "bg-red-900/40 text-red-300",
             )}
           >
             {ollamaOk === null
@@ -163,7 +167,9 @@ export default function SettingsPage() {
           </span>
           {ollamaOk === false && (
             <span className="text-xs text-foreground-tertiary">
-              Ensure webapp API (port 5181) and Ollama are running. API uses OLLAMA_BASE: {ollamaBase || "http://localhost:11434"}. If API runs in Docker, set OLLAMA_BASE=http://host.docker.internal:11434.
+              Ensure webapp API (port 10745) and Ollama are running. API uses OLLAMA_BASE:{" "}
+              {ollamaBase || "http://localhost:11434"}. If API runs in Docker, set
+              OLLAMA_BASE=http://host.docker.internal:11434.
             </span>
           )}
         </div>
@@ -176,21 +182,16 @@ export default function SettingsPage() {
         <div className="mt-4">
           <h3 className="text-sm font-medium text-foreground-secondary">Models</h3>
           <ul className="mt-2 space-y-1 text-sm text-foreground-secondary">
-            {models.length === 0 && ollamaOk !== null && (
-              <li>No models. Pull one below.</li>
-            )}
+            {models.length === 0 && ollamaOk !== null && <li>No models. Pull one below.</li>}
             {models.map((m) => (
-              <li
-                key={m.name}
-                className="flex items-center justify-between gap-2"
-              >
+              <li key={m.name} className="flex items-center justify-between gap-2">
                 <span className="font-mono">{m.name}</span>
                 <button
                   type="button"
                   onClick={() => handleDelete(m.name)}
                   disabled={deletingModel === m.name}
                   className={cn(
-                    "rounded border border-border px-2 py-0.5 text-xs text-red-400 hover:bg-red-900/30 disabled:opacity-50"
+                    "rounded border border-border px-2 py-0.5 text-xs text-red-400 hover:bg-red-900/30 disabled:opacity-50",
                   )}
                 >
                   {deletingModel === m.name ? "Deleting..." : "Delete"}
@@ -206,7 +207,7 @@ export default function SettingsPage() {
               placeholder="Model name (e.g. llama3.2)"
               className={cn(
                 "flex-1 max-w-xs rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
               disabled={!ollamaOk || pullLoading}
             />
@@ -216,7 +217,7 @@ export default function SettingsPage() {
               disabled={!ollamaOk || pullLoading || !pullName.trim()}
               className={cn(
                 "rounded border border-primary bg-primary px-3 py-1.5 text-sm text-primary-foreground",
-                "hover:bg-primary/90 disabled:opacity-50"
+                "hover:bg-primary/90 disabled:opacity-50",
               )}
             >
               {pullLoading ? "Pulling..." : "Pull"}
@@ -227,43 +228,55 @@ export default function SettingsPage() {
 
       <section className="rounded-lg border border-border bg-card p-6">
         <h2 className="font-mono text-xl font-semibold text-foreground">Local LLM</h2>
-        <p className="mt-1 text-sm text-foreground-secondary">Select provider and model for AI features.</p>
+        <p className="mt-1 text-sm text-foreground-secondary">
+          Select provider and model for AI features.
+        </p>
         <div className="mt-4 space-y-3">
-          <select className="w-full rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          <select
+            className="w-full rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             value={selectedProvider}
-            onChange={handleProviderChange}>
+            onChange={handleProviderChange}
+          >
             <option value="ollama">Ollama</option>
             <option value="lm_studio">LM Studio</option>
           </select>
-          <select className="w-full rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          <select
+            className="w-full rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             value={selectedModel}
-            onChange={handleModelChange}>
+            onChange={handleModelChange}
+          >
             {llmStatus === "loading" && <option>Loading...</option>}
             {llmStatus === "error" && <option value="">Unavailable</option>}
-            {llmModels.map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
+            {llmModels.map((m) => (
+              <option key={m.name} value={m.name}>
+                {m.name}
+              </option>
+            ))}
           </select>
         </div>
       </section>
 
       <section className="rounded-lg border border-border bg-card p-6">
-        <h2 className="font-mono text-xl font-semibold text-foreground">
-          Configuration
-        </h2>
+        <h2 className="font-mono text-xl font-semibold text-foreground">Configuration</h2>
         <p className="mt-1 text-sm text-foreground-secondary">
           Environment variables (set where you run the webapp API and MCP server).
         </p>
         <ul className="mt-4 space-y-2 text-sm text-foreground-secondary">
           <li>
-            <span className="font-mono text-foreground">OPENCLAW_GATEWAY_URL</span> – Gateway URL (default http://127.0.0.1:18789).
+            <span className="font-mono text-foreground">OPENCLAW_GATEWAY_URL</span> – Gateway URL
+            (default http://127.0.0.1:18789).
           </li>
           <li>
-            <span className="font-mono text-foreground">OPENCLAW_GATEWAY_TOKEN</span> – Gateway auth token when enabled.
+            <span className="font-mono text-foreground">OPENCLAW_GATEWAY_TOKEN</span> – Gateway auth
+            token when enabled.
           </li>
           <li>
-            <span className="font-mono text-foreground">OLLAMA_BASE</span> – Ollama API base (default http://localhost:11434).
+            <span className="font-mono text-foreground">OLLAMA_BASE</span> – Ollama API base
+            (default http://localhost:11434).
           </li>
           <li>
-            <span className="font-mono text-foreground">MOLTBOOK_API_KEY</span> – For Moltbook registration and API.
+            <span className="font-mono text-foreground">MOLTBOOK_API_KEY</span> – For Moltbook
+            registration and API.
           </li>
         </ul>
       </section>

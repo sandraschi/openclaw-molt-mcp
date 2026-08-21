@@ -6,8 +6,8 @@ from openclaw_molt_mcp.config import Settings
 
 
 def test_settings_defaults() -> None:
-    """Settings should have expected defaults."""
-    s = Settings()
+    """Settings should have expected defaults (isolated from repo .env)."""
+    s = Settings(_env_file=None)
     assert s.gateway_url == "http://127.0.0.1:18789"
     assert s.gateway_token is None
     assert s.moltbook_api_key is None
@@ -20,14 +20,14 @@ def test_settings_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENCLAW_GATEWAY_URL", "http://localhost:9999")
     monkeypatch.setenv("OPENCLAW_GATEWAY_TOKEN", "secret-token")
     monkeypatch.setenv("OPENCLAW_OPENCLAW_PATH", "openclaw-custom")
-    s = Settings()
+    s = Settings(_env_file=None)
     assert s.gateway_url == "http://localhost:9999"
-    assert s.gateway_token == "secret-token"
+    assert s.gateway_token == "secret-token"  # noqa: S105
     assert s.openclaw_path == "openclaw-custom"
 
 
 def test_settings_moltbook_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """Settings should load MOLTBOOK_API_KEY from env."""
     monkeypatch.setenv("MOLTBOOK_API_KEY", "moltbook-secret")
-    s = Settings()
+    s = Settings(_env_file=None)
     assert s.moltbook_api_key == "moltbook-secret"

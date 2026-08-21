@@ -89,7 +89,7 @@ async def test_clawd_skills_read_missing_name(mcp_client) -> None:
     """clawd_skills read without skill_name should return error."""
     result = await mcp_client.call_tool(
         "clawd_skills",
-        arguments={"operation": "read", "workspace_path": "/tmp"},
+        arguments={"operation": "read", "workspace_path": "/tmp"},  # noqa: S108
         raise_on_error=False,
     )
     data = extract_tool_result(result)

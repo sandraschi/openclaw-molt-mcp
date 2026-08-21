@@ -1,0 +1,52 @@
+# openclaw-molt-mcp — Agent Instructions
+
+> Repo-local rules. Fleet-wide standards live in `D:\Dev\repos\mcp-central-docs\standards\`.
+
+## What this repo is
+
+FastMCP server + webapp that bridges Claude Desktop / Cursor to **OpenClaw** (agent
+Gateway, channels, routing, sessions, skills, security) and **Moltbook** (AI-agent
+social network). It *uses* those platforms; it does not implement or replace them.
+
+## Architecture
+
+- **MCP tools** — `src/openclaw_molt_mcp/tools/` (11 portmanteau tools: `clawd_agent`,
+  `clawd_bastion`, `clawd_channels`, `clawd_gateway`, `clawd_moltbook`,
+  `clawd_openclaw_disconnect`, `clawd_routing`, `clawd_security`, `clawd_sessions`,
+  `clawd_skills`, `clawd_voice`). Each tool has one `@mcp.tool()` entrypoint with an
+  `operation` enum param.
+- **Webapp API** — `webapp_api/main.py` (FastAPI, port 10745), serves the React SPA.
+- **Webapp UI** — `webapp/` (React + Vite + TS, port 10744).
+- **Desktop** — `native/` (Tauri 2 + PyInstaller sidecar → NSIS installer).
+
+## Ports
+
+| Port | Service |
+|------|---------|
+| 10744 | Vite frontend |
+| 10745 | FastAPI backend + static SPA |
+| 18789 | OpenClaw Gateway (external daemon port) |
+
+## Conventions
+
+- Run Python with `uv run --directory <repo> --extra dev` — never naked `python`.
+- Run JS with `bun` (bun.lock is the lockfile). Never `npm`.
+- Lint: `uv run ruff check .` + `uv run ruff format --check .`. Format with `uv run ruff format`.
+- Type check: `uv run pyright src`. Tests: `uv run pytest`.
+- Webapp: `bun run lint`, `bun run type-check`, `bun run build` (in `webapp/`).
+- Do NOT hardcode secrets or ports in source. Config lives in `.env` (gitignored);
+  document keys in `.env.example`.
+- Do NOT commit `node_modules/`, `.venv/`, `.bak*`, `_llm_test_scripts/`, `dist/`, `target/`.
+
+## Key files
+
+- `src/openclaw_molt_mcp/config.py` — pydantic-settings, `OPENCLAW_` prefix.
+- `src/openclaw_molt_mcp/gateway_client.py` — OpenClaw Gateway HTTP client.
+- `src/openclaw_molt_mcp/moltbook_client.py` — Moltbook API client.
+- `fleet-start.config.ps1` — ports + backend target for `start.ps1`.
+
+## Standards
+
+Read the fleet hub before significant work:
+`D:\Dev\repos\mcp-central-docs\README.md` and
+`D:\Dev\repos\mcp-central-docs\standards\AGENTS.md`.

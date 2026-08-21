@@ -21,10 +21,7 @@ export default function LogBootstrap() {
       });
     };
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      const msg =
-        event.reason instanceof Error
-          ? event.reason.message
-          : String(event.reason);
+      const msg = event.reason instanceof Error ? event.reason.message : String(event.reason);
       addLog({
         ts: new Date().toISOString(),
         level: "ERROR",

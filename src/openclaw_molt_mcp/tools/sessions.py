@@ -29,6 +29,24 @@ async def clawd_sessions(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Session list, transcript, or send result from the Gateway.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_sessions(operation="list")
+    # {"success": true, "message": "...", "data": {"sessions": [...]}}
+
+    clawd_sessions(operation="send", session_key="main", args={"target": "worker", "message": "run task"})
+    # {"success": true, "message": "...", "data": {...}}
+    ```
+
     Requires OpenClaw Gateway with Tools Invoke API and OPENCLAW_GATEWAY_TOKEN.
     """
     settings = Settings()

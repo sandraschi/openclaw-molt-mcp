@@ -1,4 +1,4 @@
-import { HelpCircle, ScrollText, LogIn, Menu } from "lucide-react";
+import { HelpCircle, LogIn, Menu, ScrollText } from "lucide-react";
 import { cn } from "../utils/cn";
 
 interface TopbarProps {
@@ -24,15 +24,13 @@ export default function Topbar({
           onClick={onToggleSidebar}
           className={cn(
             "rounded-md p-2 text-foreground-secondary transition-colors",
-            "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50",
           )}
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           <Menu className="h-5 w-5" />
         </button>
-        <span className="font-mono text-lg font-semibold text-primary">
-          openclaw-molt-mcp
-        </span>
+        <span className="font-mono text-lg font-semibold text-primary">openclaw-molt-mcp</span>
         <span className="hidden text-sm text-foreground-secondary sm:inline">
           OpenClaw + Moltbook
         </span>
@@ -44,7 +42,7 @@ export default function Topbar({
           onClick={onOpenHelp}
           className={cn(
             "rounded-md p-2 text-foreground-secondary transition-colors",
-            "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+            "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50",
           )}
           aria-label="Help"
           title="Help"
@@ -56,7 +54,7 @@ export default function Topbar({
           onClick={onOpenLogger}
           className={cn(
             "rounded-md p-2 text-foreground-secondary transition-colors",
-            "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+            "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50",
           )}
           aria-label="Logger"
           title="Logger"
@@ -68,7 +66,7 @@ export default function Topbar({
           onClick={onOpenAuth}
           className={cn(
             "rounded-md p-2 text-foreground-secondary transition-colors",
-            "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+            "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50",
           )}
           aria-label="Auth"
           title="Auth"
@@ -79,4 +77,3 @@ export default function Topbar({
     </header>
   );
 }
-

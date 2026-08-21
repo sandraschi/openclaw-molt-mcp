@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { Globe, FileCode, ExternalLink, CheckCircle, Settings } from "lucide-react";
-import { cn } from "../utils/cn";
+import { CheckCircle, ExternalLink, FileCode, Globe, Settings } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
-  generateLandingPage,
-  type LandingPageRequest,
   fetchMcpConfigClients,
+  generateLandingPage,
   insertMcpConfig,
+  type LandingPageRequest,
   type McpConfigClient,
   type McpConfigInsertResponse,
 } from "../services/api";
+import { cn } from "../utils/cn";
 
 const DEPLOY_HINTS = [
   {
@@ -43,19 +43,23 @@ export default function StarterPage() {
   const [projectName, setProjectName] = useState("India Claw");
   const [heroTitle, setHeroTitle] = useState("India Claw");
   const [heroSubtitle, setHeroSubtitle] = useState(
-    "Your AI presence on the web. Built with OpenClaw and openclaw-molt-mcp."
+    "Your AI presence on the web. Built with OpenClaw and openclaw-molt-mcp.",
   );
   const [featuresText, setFeaturesText] = useState(DEFAULT_FEATURES.join("\n"));
   const [githubUrl, setGithubUrl] = useState("https://github.com");
   const [authorName, setAuthorName] = useState("Developer");
   const [authorBio, setAuthorBio] = useState(
-    "I build things. Powered by OpenClaw, Moltbook, and openclaw-molt-mcp."
+    "I build things. Powered by OpenClaw, Moltbook, and openclaw-molt-mcp.",
   );
   const [donateLink, setDonateLink] = useState("#");
   const [heroImageKeyword, setHeroImageKeyword] = useState("blue lobster");
   const [includePictures, setIncludePictures] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ path: string; message: string; index_url?: string } | null>(null);
+  const [result, setResult] = useState<{
+    path: string;
+    message: string;
+    index_url?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [mcpClients, setMcpClients] = useState<McpConfigClient[]>([]);
@@ -66,7 +70,9 @@ export default function StarterPage() {
 
   const [gatewayUrl, setGatewayUrl] = useState("http://127.0.0.1:18789");
   const [gatewayToken, setGatewayToken] = useState("");
-  const [openclawSnippet, setOpenclawSnippet] = useState<{ env: string; hint: string } | null>(null);
+  const [openclawSnippet, setOpenclawSnippet] = useState<{ env: string; hint: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     fetchMcpConfigClients()
@@ -97,7 +103,8 @@ export default function StarterPage() {
     }
     envLines.push("# MOLTBOOK_API_KEY=  # optional");
     const env = envLines.join("\n");
-    const hint = "Routing: OpenClaw stores channel-to-agent rules in ~/.openclaw/openclaw.json. Use the webapp Routes page or MCP tool clawd_routing to view/update. See INSTALL.md for config locations.";
+    const hint =
+      "Routing: OpenClaw stores channel-to-agent rules in ~/.openclaw/openclaw.json. Use the webapp Routes page or MCP tool clawd_routing to view/update. See INSTALL.md for config locations.";
     setOpenclawSnippet({ env, hint });
   }
 
@@ -166,7 +173,8 @@ export default function StarterPage() {
           Generate
         </h1>
         <p className="mt-2 text-foreground-secondary">
-          Landing pages, and more. Start with a static hero site (HTML/CSS/JS + DEPLOY.md); more generators may be added here.
+          Landing pages, and more. Start with a static hero site (HTML/CSS/JS + DEPLOY.md); more
+          generators may be added here.
         </p>
       </section>
 
@@ -176,7 +184,9 @@ export default function StarterPage() {
           Options
         </h2>
         <p className="mt-1 text-sm text-foreground-secondary">
-          Project name and hero title (e.g. India Claw). Features: one per line, optional "Title: Description". Output: ./generated/&lt;project_slug&gt;/www (override with LANDING_PAGE_OUTPUT_DIR).
+          Project name and hero title (e.g. India Claw). Features: one per line, optional
+          &quot;Title: Description&quot;. Output: ./generated/&lt;project_slug&gt;/www (override
+          with LANDING_PAGE_OUTPUT_DIR).
         </p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -189,7 +199,7 @@ export default function StarterPage() {
               placeholder="e.g. India Claw"
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -202,12 +212,14 @@ export default function StarterPage() {
               placeholder="e.g. India Claw"
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium text-foreground-secondary">Hero image keyword</span>
+            <span className="text-sm font-medium text-foreground-secondary">
+              Hero image keyword
+            </span>
             <input
               type="text"
               value={heroImageKeyword}
@@ -215,7 +227,7 @@ export default function StarterPage() {
               placeholder="e.g. blue lobster"
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -237,12 +249,14 @@ export default function StarterPage() {
               placeholder="Short tagline"
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
           <label className="block sm:col-span-2">
-            <span className="text-sm font-medium text-foreground-secondary">Features (one per line, optional "Title: Description")</span>
+            <span className="text-sm font-medium text-foreground-secondary">
+              Features (one per line, optional &quot;Title: Description&quot;)
+            </span>
             <textarea
               value={featuresText}
               onChange={(e) => setFeaturesText(e.target.value)}
@@ -250,7 +264,7 @@ export default function StarterPage() {
               placeholder="Blazing Fast: Engineered for speed."
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -262,7 +276,7 @@ export default function StarterPage() {
               onChange={(e) => setAuthorName(e.target.value)}
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -275,7 +289,7 @@ export default function StarterPage() {
               placeholder="https://github.com/..."
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -287,12 +301,14 @@ export default function StarterPage() {
               rows={2}
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
           <label className="block sm:col-span-2">
-            <span className="text-sm font-medium text-foreground-secondary">Donate link (Patreon, Ko-fi, etc.)</span>
+            <span className="text-sm font-medium text-foreground-secondary">
+              Donate link (Patreon, Ko-fi, etc.)
+            </span>
             <input
               type="url"
               value={donateLink}
@@ -300,7 +316,7 @@ export default function StarterPage() {
               placeholder="#"
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -313,16 +329,14 @@ export default function StarterPage() {
             disabled={loading}
             className={cn(
               "rounded border border-primary bg-primary px-4 py-2 text-primary-foreground",
-              "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
+              "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50",
             )}
           >
             {loading ? "Generating..." : "Generate landing page"}
           </button>
         </div>
 
-        {error && (
-          <p className="mt-4 text-sm text-red-400">{error}</p>
-        )}
+        {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
         {result && (
           <div className="mt-4 rounded-lg border-2 border-green-500 bg-green-500/10 p-6">
             <div className="flex items-start gap-3">
@@ -337,7 +351,7 @@ export default function StarterPage() {
                       rel="noopener noreferrer"
                       className={cn(
                         "inline-flex items-center gap-2 rounded border-2 border-green-500 bg-green-500 px-4 py-2 text-sm font-medium text-white",
-                        "hover:bg-green-600 hover:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                        "hover:bg-green-600 hover:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/50",
                       )}
                     >
                       <ExternalLink className="h-4 w-4" />
@@ -346,7 +360,8 @@ export default function StarterPage() {
                   </div>
                 )}
                 <p className="mt-3 text-sm text-foreground-secondary">
-                  See <span className="font-mono">DEPLOY.md</span> in the project folder for deployment instructions.
+                  See <span className="font-mono">DEPLOY.md</span> in the project folder for
+                  deployment instructions.
                 </p>
               </div>
             </div>
@@ -360,7 +375,8 @@ export default function StarterPage() {
           OpenClaw env / config snippet
         </h2>
         <p className="mt-2 text-sm text-foreground-secondary">
-          For docs or onboarding. Generates a .env.example-style block and a short routing hint. Paste into your project or README.
+          For docs or onboarding. Generates a .env.example-style block and a short routing hint.
+          Paste into your project or README.
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block">
@@ -372,7 +388,7 @@ export default function StarterPage() {
               placeholder="http://127.0.0.1:18789"
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -385,7 +401,7 @@ export default function StarterPage() {
               placeholder="leave empty if Gateway has no auth"
               className={cn(
                 "mt-1 w-full rounded border border-border bg-background px-4 py-2 font-mono text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -396,7 +412,7 @@ export default function StarterPage() {
             onClick={handleOpenClawSnippet}
             className={cn(
               "rounded border border-primary bg-primary px-4 py-2 text-primary-foreground",
-              "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50",
             )}
           >
             Generate snippet
@@ -411,7 +427,9 @@ export default function StarterPage() {
               </pre>
             </div>
             <div>
-              <span className="text-sm font-medium text-foreground-secondary">Routing / config hint</span>
+              <span className="text-sm font-medium text-foreground-secondary">
+                Routing / config hint
+              </span>
               <p className="mt-1 text-sm text-foreground-secondary">{openclawSnippet.hint}</p>
             </div>
           </div>
@@ -424,10 +442,13 @@ export default function StarterPage() {
           MCP config snippet
         </h2>
         <p className="mt-2 rounded border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm text-foreground-secondary">
-          Use with caution. This will modify your MCP client config file(s) and create timestamped backups. If openclaw-molt-mcp is already present, it will not be added again (no multi-insert).
+          Use with caution. This will modify your MCP client config file(s) and create timestamped
+          backups. If openclaw-molt-mcp is already present, it will not be added again (no
+          multi-insert).
         </p>
         <p className="mt-2 text-sm text-foreground-secondary">
-          Select one or more clients; the openclaw-molt-mcp snippet (PYTHONPATH to this repo) will be inserted into their config. Restart the client after inserting.
+          Select one or more clients; the openclaw-molt-mcp snippet (PYTHONPATH to this repo) will
+          be inserted into their config. Restart the client after inserting.
         </p>
         <div className="mt-4 flex flex-wrap gap-4">
           {mcpClients.map((c) => (
@@ -454,15 +475,13 @@ export default function StarterPage() {
             disabled={mcpInsertLoading || mcpSelected.size === 0}
             className={cn(
               "rounded border border-primary bg-primary px-4 py-2 text-primary-foreground",
-              "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
+              "hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50",
             )}
           >
             {mcpInsertLoading ? "Inserting..." : "Insert into selected configs"}
           </button>
         </div>
-        {mcpInsertError && (
-          <p className="mt-4 text-sm text-red-400">{mcpInsertError}</p>
-        )}
+        {mcpInsertError && <p className="mt-4 text-sm text-red-400">{mcpInsertError}</p>}
         {mcpInsertResult && (
           <div className="mt-4 rounded-lg border-2 border-green-500 bg-green-500/10 p-4">
             <div className="flex items-start gap-2">
@@ -470,13 +489,23 @@ export default function StarterPage() {
               <div className="text-sm text-foreground-secondary">
                 <p className="font-medium text-foreground">Done.</p>
                 {mcpInsertResult.updated.length > 0 && (
-                  <p className="mt-1">Updated: {mcpInsertResult.updated.join(", ")}. Backups created where applicable.</p>
+                  <p className="mt-1">
+                    Updated: {mcpInsertResult.updated.join(", ")}. Backups created where applicable.
+                  </p>
                 )}
                 {mcpInsertResult.skipped.length > 0 && (
-                  <p className="mt-1">Skipped (already present): {mcpInsertResult.skipped.join(", ")}.</p>
+                  <p className="mt-1">
+                    Skipped (already present): {mcpInsertResult.skipped.join(", ")}.
+                  </p>
                 )}
                 {Object.keys(mcpInsertResult.errors).length > 0 && (
-                  <p className="mt-1 text-amber-600">Errors: {Object.entries(mcpInsertResult.errors).map(([k, v]) => `${k}: ${v}`).join("; ")}.</p>
+                  <p className="mt-1 text-amber-600">
+                    Errors:{" "}
+                    {Object.entries(mcpInsertResult.errors)
+                      .map(([k, v]) => `${k}: ${v}`)
+                      .join("; ")}
+                    .
+                  </p>
                 )}
               </div>
             </div>
@@ -489,7 +518,8 @@ export default function StarterPage() {
           How to get your page online
         </h2>
         <p className="mt-1 text-sm text-foreground-secondary">
-          After generating, upload the contents of the www folder to any static host. No build step. DEPLOY.md in the project folder has the same hints.
+          After generating, upload the contents of the www folder to any static host. No build step.
+          DEPLOY.md in the project folder has the same hints.
         </p>
         <ul className="mt-4 space-y-4">
           {DEPLOY_HINTS.map((d) => (
@@ -511,4 +541,3 @@ export default function StarterPage() {
     </div>
   );
 }
-

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 import { cn } from "../../utils/cn";
 
 interface AuthModalProps {
@@ -27,7 +27,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     >
       <div
         className={cn(
-          "mx-4 w-full max-w-md rounded-lg border border-border bg-background-secondary shadow-glow animate-fade-in"
+          "mx-4 w-full max-w-md rounded-lg border border-border bg-background-secondary shadow-glow animate-fade-in",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -40,7 +40,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             onClick={onClose}
             className={cn(
               "rounded-md p-2 text-foreground-secondary transition-colors",
-              "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50",
             )}
             aria-label="Close"
           >

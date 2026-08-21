@@ -1,12 +1,12 @@
+import { AlertCircle, Layers, Plug } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Plug, Layers, AlertCircle } from "lucide-react";
-import { cn } from "../utils/cn";
 import {
   fetchGatewayStatus,
   fetchSkills,
   type GatewayStatusResponse,
   type SkillsResponse,
 } from "../services/api";
+import { cn } from "../utils/cn";
 
 export default function Integrations() {
   const [gateway, setGateway] = useState<GatewayStatusResponse | null>(null);
@@ -41,11 +41,10 @@ export default function Integrations() {
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Integrations
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Integrations</h1>
         <p className="mt-2 text-foreground-secondary">
-          OpenClaw Gateway status and installed skills. Single source from your OpenClaw setup; not duplication.
+          OpenClaw Gateway status and installed skills. Single source from your OpenClaw setup; not
+          duplication.
         </p>
       </section>
 
@@ -66,9 +65,7 @@ export default function Integrations() {
               Gateway
             </h2>
             {gateway?.success ? (
-              <p className="mt-2 text-sm text-foreground-secondary">
-                {gateway.message}
-              </p>
+              <p className="mt-2 text-sm text-foreground-secondary">{gateway.message}</p>
             ) : (
               <p className="mt-2 text-sm text-amber-400">
                 {gateway?.message ?? "Unreachable. Is OpenClaw running?"}
@@ -87,7 +84,7 @@ export default function Integrations() {
                   <li
                     key={name}
                     className={cn(
-                      "rounded bg-muted px-3 py-1.5 font-mono text-sm text-foreground-secondary"
+                      "rounded bg-muted px-3 py-1.5 font-mono text-sm text-foreground-secondary",
                     )}
                   >
                     {name}

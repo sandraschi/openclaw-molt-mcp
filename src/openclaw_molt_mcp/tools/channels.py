@@ -44,6 +44,24 @@ async def clawd_channels(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Channel list / config / send result / messages from the Gateway.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_channels(operation="list_channels")
+    # {"success": true, "message": "...", "data": {"channels": [{"name": "whatsapp", "status": "connected"}]}}
+
+    clawd_channels(operation="send_message", channel="discord", message="Hello")
+    # {"success": true, "message": "...", "data": {"sent": true}}
+    ```
+
     Requires OpenClaw Gateway with Tools Invoke API. If the Gateway does not yet expose
     the channels tool, the call returns a clear error.
     """

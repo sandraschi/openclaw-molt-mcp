@@ -1,5 +1,22 @@
+import {
+  Activity,
+  BarChart3,
+  Bot,
+  GitBranch,
+  Globe,
+  Home,
+  Layers,
+  MessageCircle,
+  MessageSquare,
+  Newspaper,
+  Plug,
+  Rocket,
+  Route,
+  Settings,
+  Share2,
+  Shield,
+} from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { Home, Bot, MessageCircle, Route, GitBranch, BarChart3, Share2, Newspaper, Layers, Shield, Settings, Plug, Globe, MessageSquare, Rocket, Activity } from "lucide-react";
 import { cn } from "../utils/cn";
 
 const navItems = [
@@ -30,7 +47,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
     <aside
       className={cn(
         "flex shrink-0 flex-col border-r border-border bg-background-secondary transition-all duration-300",
-        collapsed ? "w-16" : "w-56"
+        collapsed ? "w-16" : "w-56",
       )}
     >
       <nav className="flex flex-col gap-1 p-2">
@@ -44,9 +61,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background-secondary",
                 collapsed ? "justify-center px-2" : "",
-                isActive
-                  ? "bg-primary/20 text-primary"
-                  : "text-foreground-secondary"
+                isActive ? "bg-primary/20 text-primary" : "text-foreground-secondary",
               )
             }
           >

@@ -5,8 +5,8 @@ Includes structured info/help/news for OpenClaw, openclaw-molt-mcp, Moltbook and
 """
 
 import re
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 ASSETS_DIR = Path(__file__).resolve().parent / "landing_assets"
 
@@ -19,6 +19,8 @@ def sanitize_slug(project_name: str) -> str:
     raw = (project_name or "").lower().replace(" ", "-").strip() or "my-site"
     slug = re.sub(r"[^a-zA-Z0-9-]", "", raw) or "my-site"
     return slug if SLUG_PATTERN.match(slug) else "my-site"
+
+
 DEFAULT_FEATURES = [
     "Blazing Fast: Engineered for maximum velocity and minimum drag.",
     "Secure by Design: Fort Knox level security for your data.",
@@ -27,7 +29,9 @@ DEFAULT_FEATURES = [
 
 
 # Stable default: blue lobster (Wikimedia Commons, CC BY-SA). No random placeholder.
-DEFAULT_HERO_IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Blue-lobster.jpg/480px-Blue-lobster.jpg"
+DEFAULT_HERO_IMAGE_URL = (
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Blue-lobster.jpg/480px-Blue-lobster.jpg"
+)
 
 
 def _hero_image_url(keyword: str = "blue,lobster") -> str:
@@ -149,13 +153,14 @@ Your site is static HTML/CSS/JS. No build step. Upload the contents of this fold
 Upload the contents of `www` (all `.html`, `styles.css`, `script.js`) via FTP, SFTP, or your host's file manager. No build or server-side code required.
 """
 
+
 # Structured ecosystem info: OpenClaw, openclaw-molt-mcp, Moltbook, news, reviewers. Baked into generated site.
 ECOSYSTEM_OPENCLAW = {
     "name": "OpenClaw",
     "description": "Personal AI assistant runtime. Run 24/7 agents locally or in the cloud; connect to Moltbook, MCP, and your tools. Local-first, model-agnostic.",
     "links": [
-        ("https://openclaw.ai", "openclaw.ai – Home"),
-        ("https://docs.openclaw.ai", "docs.openclaw.ai – Documentation"),
+        ("https://openclaw.ai", "openclaw.ai - Home"),
+        ("https://docs.openclaw.ai", "docs.openclaw.ai - Documentation"),
         ("https://docs.clawd.bot/concepts/model-providers", "Model providers"),
         ("https://docs.clawd.bot/providers/ollama", "Ollama provider"),
     ],
@@ -164,28 +169,44 @@ ECOSYSTEM_openclaw_molt_mcp = {
     "name": "openclaw-molt-mcp",
     "description": "MCP server and webapp that bridge Cursor and Claude Desktop to OpenClaw and Moltbook. Dashboard for channels, routes, skills, Moltbook agent drafts, and starter landing pages. One place to manage your AI stack.",
     "links": [
-        ("https://github.com/sandraschi/openclaw-molt-mcp", "GitHub – sandraschi/openclaw-molt-mcp"),
+        ("https://github.com/sandraschi/openclaw-molt-mcp", "GitHub - sandraschi/openclaw-molt-mcp"),
     ],
 }
 ECOSYSTEM_MOLTBOOK = {
     "name": "Moltbook",
     "description": "Social network for AI agents. Agents have profiles, post, follow each other, and interact. Heartbeat pattern for agent presence. Built for the OpenClaw/Moltbot ecosystem.",
     "links": [
-        ("https://www.moltbook.com", "moltbook.com – Home"),
-        ("https://www.moltbook.com/heartbeat.md", "heartbeat.md – Agent presence pattern"),
+        ("https://www.moltbook.com", "moltbook.com - Home"),
+        ("https://www.moltbook.com/heartbeat.md", "heartbeat.md - Agent presence pattern"),
     ],
 }
 ECOSYSTEM_NEWS = [
-    ("OpenClaw's AI assistants are now building their own social network", "TechCrunch", "https://techcrunch.com/2026/01/30/openclaws-ai-assistants-are-now-building-their-own-social-network"),
-    ("There's a social network for AI agents, and it's getting weird", "The Verge", "https://theverge.com/ai-artificial-intelligence/871006/social-network-facebook-for-ai-agents-moltbook-moltbot-openclaw"),
+    (
+        "OpenClaw's AI assistants are now building their own social network",
+        "TechCrunch",
+        "https://techcrunch.com/2026/01/30/openclaws-ai-assistants-are-now-building-their-own-social-network",
+    ),
+    (
+        "There's a social network for AI agents, and it's getting weird",
+        "The Verge",
+        "https://theverge.com/ai-artificial-intelligence/871006/social-network-facebook-for-ai-agents-moltbook-moltbot-openclaw",
+    ),
     ("OpenClaw (Clawdbot) Setup Guide: Your 24/7 AI Assistant", "Bitdoze", "https://bitdoze.com/clawdbot-setup-guide"),
-    ("Model Providers – OpenClaw", "docs.clawd.bot", "https://docs.clawd.bot/concepts/model-providers"),
-    ("Ollama provider – OpenClaw", "docs.clawd.bot", "https://docs.clawd.bot/providers/ollama"),
+    ("Model Providers - OpenClaw", "docs.clawd.bot", "https://docs.clawd.bot/concepts/model-providers"),
+    ("Ollama provider - OpenClaw", "docs.clawd.bot", "https://docs.clawd.bot/providers/ollama"),
 ]
 ECOSYSTEM_REVIEWERS = [
-    ("Matthew Berman", "YouTube – AI and LLM reviews, local and open-source models", "https://www.youtube.com/@matthew_berman"),
-    ("Simon Willison", "Hacker News, blog – AI, dev tools, Datasette; thoughtful takes on AI engineering", "https://simonwillison.net"),
-    ("AI Explained", "YouTube – AI news and explainers", "https://www.youtube.com/@aiexplained"),
+    (
+        "Matthew Berman",
+        "YouTube - AI and LLM reviews, local and open-source models",
+        "https://www.youtube.com/@matthew_berman",
+    ),
+    (
+        "Simon Willison",
+        "Hacker News, blog - AI, dev tools, Datasette; thoughtful takes on AI engineering",
+        "https://simonwillison.net",
+    ),
+    ("AI Explained", "YouTube - AI news and explainers", "https://www.youtube.com/@aiexplained"),
 ]
 
 
@@ -210,7 +231,7 @@ def _ecosystem_content_html() -> str:
         for title, source, url in ECOSYSTEM_NEWS
     )
     reviewer_items = "".join(
-        f'<li><strong>{name}</strong> – {desc} <a href="{url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-glow);">Link</a></li>'
+        f'<li><strong>{name}</strong> - {desc} <a href="{url}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-glow);">Link</a></li>'
         for name, desc, url in ECOSYSTEM_REVIEWERS
     )
 
@@ -218,34 +239,44 @@ def _ecosystem_content_html() -> str:
     <div class="content-container">
         <div class="hero">
             <h1>Ecosystem</h1>
-            <p>OpenClaw, openclaw-molt-mcp, Moltbook – plus news and high-quality reviewers. Everything you need to get started and stay informed.</p>
+            <p>OpenClaw, openclaw-molt-mcp, Moltbook - plus news and high-quality reviewers. Everything you need to get started and stay informed.</p>
         </div>
 
-        {section(
+        {
+        section(
             ECOSYSTEM_OPENCLAW["name"],
-            f'<p>{ECOSYSTEM_OPENCLAW["description"]}</p><ul class="footer-links" style="justify-content: flex-start; flex-wrap: wrap; gap: 0.5rem 1.5rem;">{openclaw_links}</ul>'
-        )}
+            f'<p>{ECOSYSTEM_OPENCLAW["description"]}</p><ul class="footer-links" style="justify-content: flex-start; flex-wrap: wrap; gap: 0.5rem 1.5rem;">{openclaw_links}</ul>',
+        )
+    }
 
-        {section(
+        {
+        section(
             ECOSYSTEM_openclaw_molt_mcp["name"] + " and webapp",
-            f'<p>{ECOSYSTEM_openclaw_molt_mcp["description"]}</p><ul class="footer-links" style="justify-content: flex-start; flex-wrap: wrap; gap: 0.5rem 1.5rem;">{openclaw_molt_mcp_links}</ul>'
-        )}
+            f'<p>{ECOSYSTEM_openclaw_molt_mcp["description"]}</p><ul class="footer-links" style="justify-content: flex-start; flex-wrap: wrap; gap: 0.5rem 1.5rem;">{openclaw_molt_mcp_links}</ul>',
+        )
+    }
 
-        {section(
+        {
+        section(
             ECOSYSTEM_MOLTBOOK["name"],
-            f'<p>{ECOSYSTEM_MOLTBOOK["description"]}</p><ul class="footer-links" style="justify-content: flex-start; flex-wrap: wrap; gap: 0.5rem 1.5rem;">{moltbook_links}</ul>'
-        )}
+            f'<p>{ECOSYSTEM_MOLTBOOK["description"]}</p><ul class="footer-links" style="justify-content: flex-start; flex-wrap: wrap; gap: 0.5rem 1.5rem;">{moltbook_links}</ul>',
+        )
+    }
 
-        {section(
+        {
+        section(
             "News and coverage",
-            f'<p>Curated articles and docs on OpenClaw, Moltbook, and the ecosystem.</p><ul style="list-style: none; padding: 0;">{news_items}</ul>'
-        )}
+            f'<p>Curated articles and docs on OpenClaw, Moltbook, and the ecosystem.</p><ul style="list-style: none; padding: 0;">{news_items}</ul>',
+        )
+    }
 
-        {section(
+        {
+        section(
             "Reviewers and bloggers",
             "<p>High-quality voices covering AI, local models, and dev tools. Matthew Berman (YouTube), Simon Willison (HN/blog), and more.</p>"
-            f'<ul style="list-style: none; padding: 0;">{reviewer_items}</ul>'
-        )}
+            f'<ul style="list-style: none; padding: 0;">{reviewer_items}</ul>',
+        )
+    }
     </div>
     """
 
@@ -274,15 +305,19 @@ def generate_landing_page(
     try:
         base.resolve().relative_to(target_resolved)
     except ValueError:
-        raise ValueError("Invalid project_name: path traversal rejected")
+        raise ValueError("Invalid project_name: path traversal rejected") from None
     output_dir = base / "www"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     hero_img_url = _hero_image_url(hero_image_keyword) if include_pictures else ""
-    processed_feature_imgs = [
-        _feature_image_url(feat.split(":")[0].strip() if ":" in feat else "tech", i)
-        for i, feat in enumerate(features)
-    ] if include_pictures else []
+    processed_feature_imgs = (
+        [
+            _feature_image_url(feat.split(":")[0].strip() if ":" in feat else "tech", i)
+            for i, feat in enumerate(features)
+        ]
+        if include_pictures
+        else []
+    )
 
     feature_cards_html = ""
     for i, feat in enumerate(features):
@@ -291,7 +326,11 @@ def generate_landing_page(
         else:
             ft, fd = feat.strip(), "Experience the power of innovation."
         if include_pictures:
-            img = processed_feature_imgs[i] if i < len(processed_feature_imgs) else "https://loremflickr.com/400/300/abstract"
+            img = (
+                processed_feature_imgs[i]
+                if i < len(processed_feature_imgs)
+                else "https://loremflickr.com/400/300/abstract"
+            )
             feature_cards_html += f"""
         <div class="feature-card">
             <img src="{img}" alt="{ft.strip()}" class="feature-img">
@@ -432,9 +471,7 @@ def generate_landing_page(
     (output_dir / "script.js").write_text(js_content, encoding="utf-8")
 
     def page(filename: str, title: str, content: str) -> None:
-        html = _wrap_html(
-            title, content, filename, project_name, hero_subtitle, github_url, author_name
-        )
+        html = _wrap_html(title, content, filename, project_name, hero_subtitle, github_url, author_name)
         (output_dir / filename).write_text(html, encoding="utf-8")
 
     page("index.html", "Home", index_content)

@@ -58,7 +58,15 @@ generated/
 mcpb/src/
 .mcpbignore
 *.mcpb
+# Backup files (timestamped specialists from fleet batch edits)
+*.bak
+*.bak.*
+# Ad-hoc local debug/test scripts (may contain secrets)
+_llm_test_scripts/
 # Rust / Zed IDE — rust-analyzer may create target/ at repo root
 target/
+
+# Assfix audit reports (regenerable snapshots)
+reports/
 
 _dashboard/

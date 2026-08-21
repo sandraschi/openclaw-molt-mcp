@@ -12,10 +12,10 @@ pip install -e ".[webapp-api]"
 
 # Run (from repo root)
 $env:PYTHONPATH = "src"
-uvicorn webapp_api.main:app --reload --port 5181
+uvicorn webapp_api.main:app --reload --port 10745
 ```
 
-Port **5181**. The webapp (Vite dev) proxies `/api` to this server.
+Port **10745**. The webapp (Vite dev) proxies `/api` to this server.
 
 ## Endpoints
 

@@ -7,11 +7,16 @@ for k in list(os.environ.keys()):
     if k.startswith("OPENCLAW_"):
         del os.environ[k]
 
-# Explicitly set them to what we want
-os.environ["OPENCLAW_GATEWAY_URL"] = "http://localhost:18789"
-os.environ["OPENCLAW_GATEWAY_TOKEN"] = (
-    "9476c3f8f4a078c47e49b2f38f0472ed6e92c432c4a338c7443a49bf98f0a9ccd"
-)
+# Load values from the repo .env so no secret is hardcoded in source.
+# Run from the repo root (or set OPENCLAW_GATEWAY_URL / OPENCLAW_GATEWAY_TOKEN yourself).
+if os.path.exists(".env"):
+    with open(".env", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
 
 settings = Settings()
 token = settings.gateway_token

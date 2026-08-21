@@ -29,6 +29,24 @@ async def clawd_voice(
 
     **Dialogic returns**: Natural language message plus structured data (e.g. media path).
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Gateway TTS result, typically includes a MEDIA path or audio URL.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_voice(operation="tts", text="Hello from OpenClaw")
+    # {"success": true, "message": "TTS completed...", "data": {"media_path": "C:/Users/.../media/tts_123.mp3"}}
+
+    clawd_voice(operation="tts", text="")
+    # {"success": false, "message": "Text is required for TTS.", "error": "missing_text"}
+    ```
+
     Requires OpenClaw Gateway at OPENCLAW_GATEWAY_URL with TTS enabled and a provider configured.
     """
     if operation != "tts":

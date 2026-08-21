@@ -1,0 +1,9 @@
+{
+  "name": "openclaw-molt-mcp",
+  "version": "0.1.0",
+  "description": "FastMCP server + webapp bridging Claude Desktop/Cursor to OpenClaw Gateway (agent control, channels, routing, sessions, security) and Moltbook (AI-agent social network). 11 portmanteau tools.",
+  "author": "Sandra Schipal",
+  "repository": "https://github.com/sandraschi/openclaw-molt-mcp",
+  "license": "MIT",
+  "keywords": ["openclaw", "moltbook", "clawdbot", "mcp", "agent", "gateway", "social"]
+}

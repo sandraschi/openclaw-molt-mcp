@@ -5,8 +5,9 @@ import json
 import logging
 import os
 import re
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal, Protocol
 
 from fastmcp import Context
 
@@ -15,6 +16,25 @@ from openclaw_molt_mcp.gateway_client import GatewayClient
 from openclaw_molt_mcp.mcp_instance import mcp
 
 logger = logging.getLogger(__name__)
+
+
+class ContextLike(Protocol):
+    """Minimal context interface: used where a helper may run with or without an MCP Context."""
+
+    def info(
+        self,
+        message: str,
+        logger_name: str | None = None,
+        extra: Mapping[str, Any] | None = None,
+    ) -> Any: ...
+
+    def report_progress(
+        self,
+        progress: float,
+        total: float | None = None,
+        message: str | None = None,
+    ) -> Any: ...
+
 
 ALLOWED_OPENCLAW_NAMES = ("openclaw", "openclaw.exe")
 ALLOWED_OPENCLAW_PREFIXES = ("/usr/", "/usr/local/", "C:\\", "C:/")
@@ -100,6 +120,27 @@ async def clawd_security(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Operation-specific payload:
+      - audit/check_skills/validate_config: `{findings: [...]}` / `{skills_checked, findings}` / `{issues, paths_checked}`.
+      - recommendations: `{checklist: [...]}`.
+      - provision_sandbox: `{title, steps: [...], compositing, references}`.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_security(operation="audit")
+    # {"success": true, "message": "Audit complete. 5 findings.", "data": {"findings": [{"id": "gateway_reachable", "severity": "info", ...}]}}
+
+    clawd_security(operation="recommendations")
+    # {"success": true, "message": "Hardening checklist with 8 items from Auth0 and Intruder.", "data": {"checklist": [...]}}
+    ```
+
     References: Auth0, Intruder, docs.clawd.bot/security.
     """
     settings = Settings()
@@ -128,7 +169,7 @@ async def clawd_security(
     return {"success": False, "message": f"Unknown operation: {operation}"}
 
 
-async def _audit(ctx: Context, settings: Settings) -> dict:
+async def _audit(ctx: ContextLike, settings: Settings) -> dict:
     """Audit gateway bind, auth, token, doctor."""
     findings: list[dict] = []
     client = GatewayClient(settings)
@@ -155,7 +196,7 @@ async def _audit(ctx: Context, settings: Settings) -> dict:
         findings.append({"id": "no_token", "severity": "medium", "title": "No OPENCLAW_GATEWAY_TOKEN set"})
 
     url = settings.gateway_url
-    if "0.0.0.0" in url or (":18789" in url and "127.0.0.1" not in url):
+    if "0.0.0.0" in url or (":18789" in url and "127.0.0.1" not in url):  # noqa: S104
         findings.append({"id": "bind_exposed", "severity": "high", "title": "Gateway may be bound to 0.0.0.0"})
     elif "127.0.0.1" in url or "localhost" in url:
         findings.append({"id": "bind_loopback", "severity": "info", "title": "Gateway URL is loopback"})
@@ -268,7 +309,7 @@ def _check_skills(skills_dir: Path) -> dict:
     }
 
 
-async def _validate_config(ctx: Context, settings: Settings, base: Path) -> dict:
+async def _validate_config(ctx: ContextLike, settings: Settings, base: Path) -> dict:
     """Validate config files for common misconfigurations."""
     config_paths = [
         base / "clawdbot.json",
@@ -285,7 +326,7 @@ async def _validate_config(ctx: Context, settings: Settings, base: Path) -> dict
             data = json.loads(p.read_text(encoding="utf-8"))
             gateway = data.get("gateway") or {}
             bind = gateway.get("bind", "")
-            if not bind or bind in ("0.0.0.0", "*"):
+            if not bind or bind in ("0.0.0.0", "*"):  # noqa: S104
                 issues.append({"path": str(p), "issue": "gateway.bind exposed (0.0.0.0 or missing)"})
             allow_from = gateway.get("allowFrom")
             if not allow_from:
@@ -360,10 +401,20 @@ def run_full_audit(settings: Settings | None = None) -> dict:
         }
 
     class _MockContext:
-        def info(self, msg: str) -> None:
+        def info(
+            self,
+            message: str,
+            logger_name: str | None = None,
+            extra: Mapping[str, Any] | None = None,
+        ) -> None:
             pass
 
-        def report_progress(self, *args: object) -> None:
+        def report_progress(
+            self,
+            progress: float,
+            total: float | None = None,
+            message: str | None = None,
+        ) -> None:
             pass
 
     return asyncio.run(_run())

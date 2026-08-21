@@ -32,6 +32,24 @@ async def clawd_skills(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): `{skills: [...], path}` for list; `{skill_name, content}` for read.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_skills(operation="list")
+    # {"success": true, "message": "Found 3 skills in workspace.", "data": {"skills": ["gmail", "notion", "slack"], "path": "..."}}
+
+    clawd_skills(operation="read", skill_name="gmail")
+    # {"success": true, "message": "Read SKILL.md for 'gmail'.", "data": {"skill_name": "gmail", "content": "# Gmail skill..."}}
+    ```
+
     Skills live in workspace/skills/ or ~/.openclaw/workspace/skills/.
     ClawHub (clawhub.com) is the public skills registry.
     """

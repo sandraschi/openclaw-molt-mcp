@@ -2,16 +2,24 @@
 
 > MCP server and React webapp that bridge Cursor and Claude Desktop to OpenClaw and Moltbook. Uses OpenClaw Gateway and Moltbook API; does not implement or replace them. Alpha.
 
-Ingest for LLMs: gitingest.com/sandraschi/openclaw-molt-mcp (Summary, Directory Structure, Files Content). This repo: (1) FastMCP 2.14+ stdio server – tools agent, sessions, channels, routing, skills, gateway, security, moltbook. (2) React dashboard (5180) + FastAPI (5181) – Startpage, AI/Ollama, Channels, Routes, Diagram, Statistics, Moltbook, Starter page (landing-site generator), Settings. Install: INSTALL.md. Run MCP: `python -m openclaw_molt_mcp`. Run webapp: `uvicorn webapp_api.main:app --port 5181` then `cd webapp && npm run dev`; or `scripts/start.ps1` (Windows).
+Ingest for LLMs: gitingest.com/sandraschi/openclaw-molt-mcp (Summary, Directory Structure, Files Content). This repo: (1) FastMCP 3.4+ stdio server — tools agent, sessions, channels, routing, skills, gateway, security, bastion, moltbook, voice. (2) React dashboard (10744) + FastAPI (10745) — Health, AI/Ollama, Channels, Routes, Diagram, Statistics, Moltbook, Starter page (landing-site generator), Settings. Install: INSTALL.md. Onboarding (accounts/keys): docs/ONBOARDING.md. Run MCP: `uv run python -m openclaw_molt_mcp`. Run webapp: `start.ps1` (Windows; backend 10745 + frontend 10744).
 
 ## Core
 
 - [README](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/README.md): What this repo is, install pointer, layout, docs, repo manifests
-- [INSTALL.md](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/INSTALL.md): Pip, webapp (API + frontend), one-shot scripts, config, checks
+- [INSTALL.md](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/INSTALL.md): Install, run, config, checks
+- [Onboarding](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/ONBOARDING.md): First-timer OpenClaw + Moltbook accounts/keys, pitfalls
+
+## Reference
+
+- [Configuration](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/CONFIGURATION.md): All env vars and config options
+- [Tools](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/TOOLS.md): MCP tool reference (11 portmanteau tools)
+- [Troubleshooting](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/TROUBLESHOOTING.md): Symptom → fix for health, ports, Moltbook, build
+- [Development](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/DEVELOPMENT.md): Dev setup and quality gates
 
 ## MCP & Webapp
 
-- [openclaw-molt-mcp tools](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/README_openclaw_molt_mcp_TOOLS.md): MCP server, portmanteau tools
+- [openclaw-molt-mcp tools (narrative)](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/README_openclaw_molt_mcp_TOOLS.md): MCP server, portmanteau tools
 - [Webapp](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/README_WEBAPP.md): Dashboard pages, API endpoints, OpenClaw banner, Starter page, Logger
 
 ## External (OpenClaw, Moltbook)
@@ -23,4 +31,4 @@ Ingest for LLMs: gitingest.com/sandraschi/openclaw-molt-mcp (Summary, Directory 
 
 - [Architecture](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/ARCHITECTURE.md): Repo layout, MCP vs API data flow
 - [Security](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/SECURITY.md): Threats, hardening
-- [Doc index](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/README_INDEX.md): Full doc index
+- [Doc index](https://raw.githubusercontent.com/sandraschi/openclaw-molt-mcp/main/docs/README.md): Full doc index

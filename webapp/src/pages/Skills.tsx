@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronRight, Layers } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { cn } from "../utils/cn";
 import { fetchSkillContent, fetchSkills } from "../services/api";
+import { cn } from "../utils/cn";
 
 export default function Skills() {
   const [skills, setSkills] = useState<string[]>([]);
@@ -30,44 +30,43 @@ export default function Skills() {
     loadSkills();
   }, [loadSkills]);
 
-  const handleExpand = useCallback(async (name: string) => {
-    if (expanded === name) {
-      setExpanded(null);
+  const handleExpand = useCallback(
+    async (name: string) => {
+      if (expanded === name) {
+        setExpanded(null);
+        setContent(null);
+        return;
+      }
+      setExpanded(name);
+      setContentLoading(true);
       setContent(null);
-      return;
-    }
-    setExpanded(name);
-    setContentLoading(true);
-    setContent(null);
-    try {
-      const res = await fetchSkillContent(name);
-      setContent(res.content ?? "");
-    } catch (e) {
-      setContent(e instanceof Error ? e.message : "Failed to load content");
-    } finally {
-      setContentLoading(false);
-    }
-  }, [expanded]);
+      try {
+        const res = await fetchSkillContent(name);
+        setContent(res.content ?? "");
+      } catch (e) {
+        setContent(e instanceof Error ? e.message : "Failed to load content");
+      } finally {
+        setContentLoading(false);
+      }
+    },
+    [expanded],
+  );
 
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Skills
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Skills</h1>
         <p className="mt-2 text-foreground-secondary">
           OpenClaw workspace skills. List and read SKILL.md files.
         </p>
-        {path && (
-          <p className="mt-1 font-mono text-xs text-muted">{path}</p>
-        )}
+        {path && <p className="mt-1 font-mono text-xs text-muted">{path}</p>}
       </section>
 
       {loading ? (
         <section
           className={cn(
             "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-12",
-            "text-center text-foreground-secondary"
+            "text-center text-foreground-secondary",
           )}
         >
           <p className="font-medium text-foreground">Loading skills...</p>
@@ -76,7 +75,7 @@ export default function Skills() {
         <section
           className={cn(
             "rounded-lg border border-destructive/50 bg-destructive/10 p-6",
-            "text-destructive"
+            "text-destructive",
           )}
         >
           <p className="font-medium">{error}</p>
@@ -85,7 +84,7 @@ export default function Skills() {
         <section
           className={cn(
             "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-12",
-            "text-center text-foreground-secondary"
+            "text-center text-foreground-secondary",
           )}
         >
           <Layers className="mb-4 h-12 w-12 text-muted" />
@@ -96,16 +95,13 @@ export default function Skills() {
       ) : (
         <section className="space-y-3">
           {skills.map((name) => (
-            <div
-              key={name}
-              className="rounded-lg border border-border bg-card overflow-hidden"
-            >
+            <div key={name} className="rounded-lg border border-border bg-card overflow-hidden">
               <button
                 type="button"
                 onClick={() => handleExpand(name)}
                 className={cn(
                   "flex w-full items-center gap-2 px-4 py-3 text-left font-medium text-foreground",
-                  "hover:bg-muted/50 transition-colors"
+                  "hover:bg-muted/50 transition-colors",
                 )}
               >
                 {expanded === name ? (

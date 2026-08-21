@@ -1,4 +1,5 @@
 """Run the log server (python -m openclaw_molt_mcp.serve_logs)."""
+
 import sys
 from pathlib import Path
 
@@ -7,7 +8,7 @@ root = Path(__file__).resolve().parent.parent
 if str(root / "src") not in sys.path:
     sys.path.insert(0, str(root / "src"))
 
-from openclaw_molt_mcp.serve_logs import main  # noqa: E402
+from openclaw_molt_mcp.serve_logs import main
 
 if __name__ == "__main__":
     main()

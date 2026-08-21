@@ -1,6 +1,6 @@
-import { useLayoutEffect, useState } from "react";
 import { GitBranch } from "lucide-react";
 import mermaid from "mermaid";
+import { useLayoutEffect, useState } from "react";
 
 const DIAGRAM_OPENCLAW = `
 flowchart TB
@@ -47,7 +47,7 @@ flowchart LR
     MCP --> Security[clawd_security]
     MCP --> Moltbook[clawd_moltbook]
   end
-  subgraph Webapp["Webapp :5180"]
+  subgraph Webapp["Webapp :10744"]
     React[React + Vite]
     React --> Start[Startpage]
     React --> AI[AI / Ollama]
@@ -55,7 +55,7 @@ flowchart LR
     React --> Rt[Routes]
     React --> Int[Integrations]
   end
-  subgraph API["Webapp API :5181"]
+    subgraph API["Webapp API :10745"]
     FastAPI[FastAPI]
     FastAPI --> Ask["/api/ask"]
     FastAPI --> GW["/api/gateway/status"]
@@ -79,12 +79,12 @@ flowchart LR
 const DIAGRAM_FULL = `
 flowchart TB
   subgraph User["User"]
-    Browser[Browser :5180]
+    Browser[Browser :10744]
     IDE[Cursor / Claude]
   end
   subgraph openclaw_molt_mcp["openclaw-molt-mcp"]
     Webapp[Webapp React]
-    API[Webapp API :5181]
+    API[Webapp API :10745]
     MCP[MCP Server stdio]
     Webapp --> API
     IDE --> MCP
@@ -148,9 +148,7 @@ export default function Diagram() {
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Diagrams
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Diagrams</h1>
         <p className="mt-2 text-foreground-secondary">
           Mermaid diagrams of the OpenClaw system and openclaw-molt-mcp + webapp connections.
         </p>
@@ -164,10 +162,7 @@ export default function Diagram() {
 
       <div className="space-y-10">
         {diagrams.map((d, i) => (
-          <section
-            key={d.id}
-            className="rounded-lg border border-border bg-card p-6"
-          >
+          <section key={d.id} className="rounded-lg border border-border bg-card p-6">
             <h2 className="flex items-center gap-2 font-mono text-xl font-semibold text-foreground">
               <GitBranch className="h-5 w-5 text-primary" />
               {d.title}
@@ -188,4 +183,3 @@ export default function Diagram() {
     </div>
   );
 }
-

@@ -2,6 +2,41 @@
 
 All notable changes to openclaw-molt-mcp will be documented in this file.
 
+## [Unreleased] - 2026-08-21
+
+### Added
+
+- **Webapp API endpoints**: `GET /api/capabilities` (fleet-standard runtime tool-surface introspection; 11 portmanteau tools, static registry) and `GET /api/llm/discover` (Ollama + LM Studio local provider discovery).
+- **Desktop (Tauri) integration**: `@tauri-apps/api` dependency, `webapp/src/hooks/useTauri.ts` hook, and backend-status listener wired into `Health.tsx` (inert in browser dev).
+- **CI**: `.github/workflows/ci.yml` (Windows-only; ruff, ruff format, pyright, pytest+cov, webapp Biome/tsc/build).
+- **Quality tooling**: `pyright` dev dependency + `pyrightconfig.json`; `[tool.coverage]` with `fail_under = 40`. Enabled ruff `T20` rule (per-file-ignores for `scripts/*.py`).
+- **Session-context files**: `.claude-plugin/plugin.json`, `.cursorrules`, `.windsurfrules`, `.opencode/skills/repo-standards/SKILL.md`, `.github/copilot-instructions.md`.
+- **`.env.example`**: documents the full env surface (gateway, Moltbook, optional log/workspace/transport).
+- **Docs stack**: `docs/` onboarding, configuration, development, tools, troubleshooting reference files (+ `docs/README.md` index), INSTALL.md onboarding callout, README docs table, refreshed `llms.txt`.
+
+### Changed
+
+- **Ports moved into fleet reservoir**: webapp moved off the Vite-adjacent 5180/5181 to **10744 (frontend) / 10745 (backend)**. Updated CORS (webapp_api + serve_logs), Vite proxy, fleet-start config, start/stop scripts, registries (`webapp-registry.json`, `fleet-registry.json`, `WEBAPP_PORTS.md`), and all docs. Gateway stays on its external daemon port 18789.
+- **Webapp lint/format now Biome**: replaced ESLint with `@biomejs/biome` (fleet `BUN_STANDARDS.md`); `lint`/`check`/`format` scripts, `biome.json`, `.github/workflows/ci.yml`, and justfile updated. ESLint config + deps removed.
+- **`web_sota` runt deleted**: legacy duplicate webapp scaffold removed; build/start scripts and justfile re-pointed to `webapp/`.
+- **Tool docstrings**: all 11 portmanteau tool modules gained `## Return Format` and `## Examples` sections.
+- **`AGENTS.md` rewritten**: architecture, ports, conventions, gates.
+
+### Fixed
+
+- **`ollama_delete` dropped request body**: `client.delete(url, json=...)` silently discards the body on httpx; switched to `client.request("DELETE", url, json={"name": name})`.
+- **Secret leak**: `_llm_test_scripts/debug_settings.py` contained a hardcoded gateway token; rewritten to read from `.env`. `.gitignore` now excludes `_llm_test_scripts/` and `*.bak`/`*.bak.*`; stale `.bak` files removed.
+- **Test isolation**: `tests/test_config.py` now passes `Settings(_env_file=None)` so a real `.env` doesn't leak into tests. **41/41 pass.**
+- **Pyright clean**: fixed `logging_config` LogRecord extras (`getattr`), awaited `ctx.info(...)` in `agent.py`/`routing.py`, and `ContextLike` protocol in `security.py`. **0 errors.**
+- **Pre-existing lint**: fixed all ruff issues in CUA smoke scripts and `serve_logs.py`.
+- **Corrupted `httptools` install**: the venv's httptools had an empty/missing `HttpRequestParser` (uvicorn HTTP hung on every request, `HTTP 000`). Reinstalled the lockfile-pinned `httptools==0.7.1`; webapp now serves health/capabilities over HTTP.
+- **`main.tsx`**: removed non-null assertion on `#root` (Biome-clean).
+
+### Removed
+
+- **ESLint** from the webapp (Biome is the single JS/TS linter/formatter).
+- **`web_sota/`** legacy scaffold and its stale 10764/10765 port references.
+
 ## [0.2.1] - 2026-02-06
 
 ### Security

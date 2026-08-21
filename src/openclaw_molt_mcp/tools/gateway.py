@@ -28,6 +28,24 @@ async def clawd_gateway(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): status/health payload from the Gateway; doctor returns `{stdout, stderr}`.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_gateway(operation="health")
+    # {"success": true, "message": "Gateway healthy."}
+
+    clawd_gateway(operation="status")
+    # {"success": true, "message": "Gateway reachable...", "data": {...}}
+    ```
+
     Requires `openclaw` CLI on PATH and OPENCLAW_GATEWAY_URL reachable.
     """
     settings = Settings()

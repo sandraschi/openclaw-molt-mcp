@@ -6,9 +6,10 @@
   "type": "mcp-server + webapp",
   "status": "alpha",
   "framework": "FastMCP",
-  "tools": 9,
+  "tools": 11,
   "tool_list": [
     "clawd_agent",
+    "clawd_bastion",
     "clawd_gateway",
     "clawd_channels",
     "clawd_moltbook",
@@ -16,9 +17,14 @@
     "clawd_security",
     "clawd_sessions",
     "clawd_skills",
+    "clawd_voice",
     "clawd_openclaw_disconnect"
   ],
   "transport": ["stdio"],
+  "ports": {
+    "frontend": 10744,
+    "backend": 10745
+  },
   "keywords": [
     "mcp",
     "openclaw",

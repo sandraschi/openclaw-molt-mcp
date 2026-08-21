@@ -15,8 +15,8 @@
 | Part | What it does |
 |------|----------------|
 | **MCP server** (stdio) | FastMCP 3.1.0+ tools: agent, sessions, channels, routing, skills, gateway, security, moltbook. For Cursor/Claude Desktop. |
-| **Webapp** (React + Vite + Tailwind) | Dashboard on port 5180: Startpage, AI (Ollama), Channels, Routes, Diagram, Statistics, Moltbook, Integrations, Clawnews, Skills, Security, **Generate landing** (landing-site generator), Settings. |
-| **webapp_api** (FastAPI) | Backend on 5181: /api/ask, /api/gateway/status, /api/skills, /api/clawnews, /api/ollama/*, /api/channels, /api/routing, /api/openclaw/status, /api/landing-page. |
+| **Webapp** (React + Vite + Tailwind) | Dashboard on port 10744: Startpage, AI (Ollama), Channels, Routes, Diagram, Statistics, Moltbook, Integrations, Clawnews, Skills, Security, **Generate landing** (landing-site generator), Settings. |
+| **webapp_api** (FastAPI) | Backend on 10745: /api/ask, /api/gateway/status, /api/skills, /api/clawnews, /api/ollama/*, /api/channels, /api/routing, /api/openclaw/status, /api/landing-page. |
 
 One place to run agents, manage channels/routes/skills, and use Moltbook; OpenClaw and Moltbook stay separate.
 
@@ -43,8 +43,8 @@ If you don't have `just` installed:
 ## Repo layout
 
 - **src/openclaw_molt_mcp/**  MCP server and tools
-- **webapp/**  React dashboard (port 5180)
-- **webapp_api/**  FastAPI backend (port 5181)
+- **webapp/**  React dashboard (port 10744)
+- **webapp_api/**  FastAPI backend (port 10745)
 - **scripts/**  install.ps1, install.bat, start.ps1, start.bat, check.ps1, serve_logs.ps1, mcpb-build.ps1
 - **snippets/**  MCP config snippet (snippets/mcp-config-openclaw-molt-mcp.json); see [INSTALL.md](INSTALL.md) and [mcp-central-docs pattern](https://github.com/sandraschi/mcp-central-docs/blob/main/docs/patterns/MCP_CLIENT_CONFIG_SNIPPETS.md)
 
@@ -57,9 +57,14 @@ If you don't have `just` installed:
 | [LICENSE](LICENSE) | MIT license |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [INSTALL.md](INSTALL.md) | Install, run, config, checks |
-| [docs/README_INDEX.md](docs/README_INDEX.md) | Doc index |
+| [docs/README.md](docs/README.md) | **Documentation index** |
+| [docs/ONBOARDING.md](docs/ONBOARDING.md) | First-timer: OpenClaw + Moltbook accounts/keys |
+| [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Env vars and config |
+| [docs/TOOLS.md](docs/TOOLS.md) | MCP tool reference |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Dev setup and quality gates |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Symptom → fix |
 | [docs/README_WEBAPP.md](docs/README_WEBAPP.md) | Webapp pages, API, Logger |
-| [docs/README_openclaw_molt_mcp_TOOLS.md](docs/README_openclaw_molt_mcp_TOOLS.md) | MCP tools |
+| [docs/README_openclaw_molt_mcp_TOOLS.md](docs/README_openclaw_molt_mcp_TOOLS.md) | MCP tools (narrative) |
 | [docs/README_OPENCLAW.md](docs/README_OPENCLAW.md) | OpenClaw (external) |
 | [docs/README_MOLTBOOK.md](docs/README_MOLTBOOK.md) | Moltbook (external) |
 | [docs/HOW_THIS_WAS_MADE.md](docs/HOW_THIS_WAS_MADE.md) | How this was made (vibecode, Cursor, one day) |

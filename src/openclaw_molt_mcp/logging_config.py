@@ -20,12 +20,15 @@ def _structured_record(record: logging.LogRecord) -> str:
     }
     if record.exc_info:
         payload["exc"] = record.exc_info[1].__class__.__name__ if record.exc_info[1] else None
-    if hasattr(record, "tool"):
-        payload["tool"] = record.tool
-    if hasattr(record, "operation"):
-        payload["operation"] = record.operation
-    if hasattr(record, "error_type"):
-        payload["error_type"] = record.error_type
+    tool = getattr(record, "tool", None)
+    if tool is not None:
+        payload["tool"] = tool
+    operation = getattr(record, "operation", None)
+    if operation is not None:
+        payload["operation"] = operation
+    error_type = getattr(record, "error_type", None)
+    if error_type is not None:
+        payload["error_type"] = error_type
     return json.dumps(payload, default=str) + "\n"
 
 
@@ -41,10 +44,12 @@ class StructuredStreamFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         base = f"{self.formatTime(record)} [{record.levelname}] {record.name}: {record.getMessage()}"
-        if hasattr(record, "tool"):
-            base += f" tool={record.tool}"
-        if hasattr(record, "operation"):
-            base += f" operation={record.operation}"
+        tool = getattr(record, "tool", None)
+        if tool is not None:
+            base += f" tool={tool}"
+        operation = getattr(record, "operation", None)
+        if operation is not None:
+            base += f" operation={operation}"
         if record.exc_info:
             base += f" exc={record.exc_info[1]!r}"
         return base

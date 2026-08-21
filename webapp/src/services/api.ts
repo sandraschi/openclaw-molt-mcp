@@ -3,8 +3,7 @@
  */
 
 const API_BASE =
-  typeof import.meta.env?.VITE_API_URL === "string" &&
-  import.meta.env.VITE_API_URL.length > 0
+  typeof import.meta.env?.VITE_API_URL === "string" && import.meta.env.VITE_API_URL.length > 0
     ? import.meta.env.VITE_API_URL.replace(/\/$/, "")
     : "";
 
@@ -113,7 +112,9 @@ export async function searchMoltbook(query: string): Promise<MoltbookSearchRespo
   return res.json() as Promise<MoltbookSearchResponse>;
 }
 
-export async function moltbookPost(content: string): Promise<{ success: boolean; message?: string; data?: unknown }> {
+export async function moltbookPost(
+  content: string,
+): Promise<{ success: boolean; message?: string; data?: unknown }> {
   const res = await fetch(apiUrl("/api/moltbook/post"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -128,7 +129,7 @@ export async function moltbookPost(content: string): Promise<{ success: boolean;
 
 export async function moltbookComment(
   postId: string,
-  content: string
+  content: string,
 ): Promise<{ success: boolean; message?: string; data?: unknown }> {
   const res = await fetch(apiUrl("/api/moltbook/comment"), {
     method: "POST",
@@ -142,7 +143,9 @@ export async function moltbookComment(
   return res.json();
 }
 
-export async function moltbookUpvote(postId: string): Promise<{ success: boolean; message?: string }> {
+export async function moltbookUpvote(
+  postId: string,
+): Promise<{ success: boolean; message?: string }> {
   const res = await fetch(apiUrl("/api/moltbook/upvote"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -156,7 +159,7 @@ export async function moltbookUpvote(postId: string): Promise<{ success: boolean
 }
 
 export async function registerMoltbookAgent(
-  body: MoltbookRegisterRequest
+  body: MoltbookRegisterRequest,
 ): Promise<MoltbookRegisterResponse> {
   const res = await fetch(apiUrl("/api/moltbook/register"), {
     method: "POST",
@@ -263,9 +266,7 @@ export interface OllamaGenerateResponse {
   raw?: Record<string, unknown>;
 }
 
-export async function ollamaGenerate(
-  body: OllamaGenerateRequest
-): Promise<OllamaGenerateResponse> {
+export async function ollamaGenerate(body: OllamaGenerateRequest): Promise<OllamaGenerateResponse> {
   const res = await fetch(apiUrl("/api/ollama/generate"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -296,9 +297,7 @@ export interface OllamaChatResponse {
   raw?: Record<string, unknown>;
 }
 
-export async function ollamaChat(
-  body: OllamaChatRequest
-): Promise<OllamaChatResponse> {
+export async function ollamaChat(body: OllamaChatRequest): Promise<OllamaChatResponse> {
   const res = await fetch(apiUrl("/api/ollama/chat"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -356,9 +355,7 @@ export interface ChannelsResponse {
   error?: string;
 }
 
-export async function channelsApi(
-  body: ChannelsRequest
-): Promise<ChannelsResponse> {
+export async function channelsApi(body: ChannelsRequest): Promise<ChannelsResponse> {
   const res = await fetch(apiUrl("/api/channels"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -390,9 +387,7 @@ export interface RoutingResponse {
   error?: string;
 }
 
-export async function routingApi(
-  body: RoutingRequest
-): Promise<RoutingResponse> {
+export async function routingApi(body: RoutingRequest): Promise<RoutingResponse> {
   const res = await fetch(apiUrl("/api/routing"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -427,9 +422,7 @@ export interface LandingPageResponse {
   message?: string;
 }
 
-export async function generateLandingPage(
-  body: LandingPageRequest
-): Promise<LandingPageResponse> {
+export async function generateLandingPage(body: LandingPageRequest): Promise<LandingPageResponse> {
   const res = await fetch(apiUrl("/api/landing-page"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -509,9 +502,7 @@ export interface SessionsResponse {
   error?: string;
 }
 
-export async function sessionsApi(
-  body: SessionsRequest
-): Promise<SessionsResponse> {
+export async function sessionsApi(body: SessionsRequest): Promise<SessionsResponse> {
   const res = await fetch(apiUrl("/api/sessions"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -536,7 +527,7 @@ export async function runSecurityAudit(): Promise<SecurityAuditResponse> {
 }
 
 export async function insertMcpConfig(
-  body: McpConfigInsertRequest
+  body: McpConfigInsertRequest,
 ): Promise<McpConfigInsertResponse> {
   const res = await fetch(apiUrl("/api/mcp-config/insert"), {
     method: "POST",

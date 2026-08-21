@@ -1,11 +1,7 @@
 import { CheckCircle, ChevronRight, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { fetchGatewayStatus, fetchMoltbookFeed, fetchOpenClawStatus } from "../services/api";
 import { cn } from "../utils/cn";
-import {
-  fetchOpenClawStatus,
-  fetchGatewayStatus,
-  fetchMoltbookFeed,
-} from "../services/api";
 
 const ONBOARDING_STORAGE_KEY = "openclaw-molt-mcp-onboarding";
 
@@ -122,22 +118,13 @@ export default function Onboarding() {
   }, [state.step, checkStep1, checkStep2, checkStep3]);
 
   const currentStep = STEPS[state.step - 1];
-  const isComplete = state.completed.includes(state.step);
   const status =
-    state.step === 1
-      ? cliOk
-      : state.step === 2
-        ? gatewayOk
-        : state.step === 3
-          ? moltbookOk
-          : null;
+    state.step === 1 ? cliOk : state.step === 2 ? gatewayOk : state.step === 3 ? moltbookOk : null;
 
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Onboarding
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Onboarding</h1>
         <p className="mt-2 text-foreground-secondary">
           Multi-step setup: OpenClaw CLI, Gateway, Moltbook. Progress saved in browser.
         </p>
@@ -156,7 +143,7 @@ export default function Onboarding() {
                   ? "bg-primary/20 text-primary"
                   : state.completed.includes(s.id)
                     ? "bg-muted/50 text-foreground-secondary"
-                    : "text-foreground-secondary hover:bg-muted/30"
+                    : "text-foreground-secondary hover:bg-muted/30",
               )}
             >
               {state.completed.includes(s.id) && <CheckCircle className="h-4 w-4" />}
@@ -171,9 +158,15 @@ export default function Onboarding() {
 
           {state.step === 1 && (
             <p className="text-sm">
-              Run <code className="rounded bg-muted px-1">openclaw --version</code> to verify. Install via{" "}
-              <code className="rounded bg-muted px-1">npm install -g openclaw</code> or see{" "}
-              <a href="https://docs.openclaw.ai" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+              Run <code className="rounded bg-muted px-1">openclaw --version</code> to verify.
+              Install via <code className="rounded bg-muted px-1">npm install -g openclaw</code> or
+              see{" "}
+              <a
+                href="https://docs.openclaw.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline"
+              >
                 docs.openclaw.ai
               </a>
               .
@@ -181,14 +174,17 @@ export default function Onboarding() {
           )}
           {state.step === 2 && (
             <p className="text-sm">
-              Ensure OpenClaw Gateway is running (default <code className="rounded bg-muted px-1">http://127.0.0.1:18789</code>).
-              Set <code className="rounded bg-muted px-1">OPENCLAW_GATEWAY_URL</code> and{" "}
+              Ensure OpenClaw Gateway is running (default{" "}
+              <code className="rounded bg-muted px-1">http://127.0.0.1:18789</code>). Set{" "}
+              <code className="rounded bg-muted px-1">OPENCLAW_GATEWAY_URL</code> and{" "}
               <code className="rounded bg-muted px-1">OPENCLAW_GATEWAY_TOKEN</code> if needed.
             </p>
           )}
           {state.step === 3 && (
             <p className="text-sm">
-              Moltbook is optional. Set <code className="rounded bg-muted px-1">MOLTBOOK_API_KEY</code> for feed, search, and post.
+              Moltbook is optional. Set{" "}
+              <code className="rounded bg-muted px-1">MOLTBOOK_API_KEY</code> for feed, search, and
+              post.
             </p>
           )}
 

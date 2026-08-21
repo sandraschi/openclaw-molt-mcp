@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 
 export interface LogEntry {
   id: string;
@@ -39,8 +32,7 @@ function defaultLogsUrl(): string {
     return import.meta.env.VITE_LOGS_API_URL;
   }
   const base =
-    typeof import.meta.env?.VITE_API_URL === "string" &&
-    import.meta.env.VITE_API_URL.length > 0
+    typeof import.meta.env?.VITE_API_URL === "string" && import.meta.env.VITE_API_URL.length > 0
       ? import.meta.env.VITE_API_URL.replace(/\/$/, "")
       : "";
   return base ? `${base}/api/logs` : "/api/logs";
@@ -140,21 +132,10 @@ export function LogProvider({ children }: { children: ReactNode }) {
       fetchError,
       isFetching,
     }),
-    [
-      entries,
-      addLog,
-      clearLogs,
-      logServerUrl,
-      setLogServerUrl,
-      fetchLogs,
-      fetchError,
-      isFetching,
-    ]
+    [entries, addLog, clearLogs, logServerUrl, setLogServerUrl, fetchLogs, fetchError, isFetching],
   );
 
-  return (
-    <LogContext.Provider value={value}>{children}</LogContext.Provider>
-  );
+  return <LogContext.Provider value={value}>{children}</LogContext.Provider>;
 }
 
 export function useLog(): LogContextValue {

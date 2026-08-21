@@ -1,5 +1,8 @@
 # Installation
 
+> **First time?** Complete [docs/ONBOARDING.md](docs/ONBOARDING.md) before expecting
+> live OpenClaw / Moltbook calls — you need the OpenClaw Gateway and a Moltbook API key.
+
 ## 🚀 Quick Start (recommended)
 
 ```powershell
@@ -46,18 +49,12 @@ If you prefer not to use `just`:
    # stdio mode (for MCP clients like Claude Desktop)
    uv run python -m openclaw_molt_mcp.server
 
-   # HTTP mode (for web dashboard)
-   uv run uvicorn openclaw_molt_mcp.server:app --port 10765
+   # Full webapp (backend + frontend) via the fleet launcher
+   .\start.ps1
+   # Backend: http://127.0.0.1:10745  Frontend: http://127.0.0.1:10744
    ```
 
-4. (optional) Start the frontend:
-   ```powershell
-   cd webapp
-   npm install
-   npm run dev
-   ```
-
-5. Open `http://localhost:10765` or the frontend URL.
+5. Open `http://127.0.0.1:10744` (webapp) or `http://127.0.0.1:10745` (backend /api).
 
 ---
 
@@ -105,7 +102,7 @@ From repo root:
 ```powershell
 .\scripts\start.ps1
 ```
-Or `scripts\start.bat`. Kills old processes on 5181/5180 and their windows, kills project-scoped watchfiles; starts API and webapp in two windows. Open http://localhost:5180. API: http://localhost:5181.
+Or `scripts\start.bat`. Kills old processes on 10745/10744 and their windows, kills project-scoped watchfiles; starts API and webapp in two windows. Open http://localhost:10744. API: http://localhost:10745.
 
 **3b. MCP server only**  
 Add openclaw-molt-mcp to your MCP client config (stdio, cwd = cloned repo). See **MCP config snippet** and **MCP client config locations** below.
@@ -166,7 +163,7 @@ No `cwd` or editable install needed: `PYTHONPATH` points Python at the repo `src
 | `OPENCLAW_LOG_LEVEL` | `INFO` |
 | `CLAWD_LOG_SERVER_PORT` | `8765` (webapp Logger modal) |
 | `CLAWD_LOG_SERVER_HOST` | `127.0.0.1` |
-| `CLAWD_LOG_CORS_ORIGIN` | `http://localhost:5180` (override when log server CORS differs) |
+| `CLAWD_LOG_CORS_ORIGIN` | `http://localhost:10744` (override when log server CORS differs) |
 | `WEBAPP_API_KEY` | optional; when set, requires `X-API-Key` on API endpoints |
 | `OLLAMA_BASE` | `http://localhost:11434` (webapp Ollama proxy) |
 | `LANDING_PAGE_OUTPUT_DIR` | `./generated` (Starter page output) |

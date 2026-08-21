@@ -2,12 +2,13 @@
 FastAPI backend for openclaw-molt-mcp webapp: proxy to OpenClaw Gateway, Ollama (models, generate, chat), skills, clawnews.
 
 Run from repo root with PYTHONPATH=src:
-  uvicorn webapp_api.main:app --reload --port 10765
+  uvicorn webapp_api.main:app --reload --port 10745
 """
 
 import asyncio
 import os
 import shutil
+from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -27,7 +28,8 @@ from openclaw_molt_mcp.moltbook_client import MoltbookClient
 from openclaw_molt_mcp.serve_logs import tail_log_lines
 from openclaw_molt_mcp.tools.routing import _routing_config_fallback
 from openclaw_molt_mcp.tools.security import run_full_audit
-
+from webapp_api.landing_page_service import generate_landing_page, sanitize_slug
+from webapp_api.mcp_config_insert import insert_into_config, list_clients
 from webapp_api.ollama_client import (
     load_preprompt,
     ollama_chat,
@@ -37,8 +39,6 @@ from webapp_api.ollama_client import (
     ollama_pull,
     ollama_tags,
 )
-from webapp_api.landing_page_service import generate_landing_page, sanitize_slug
-from webapp_api.mcp_config_insert import insert_into_config, list_clients
 
 app = FastAPI(title="openclaw-molt-mcp Webapp API", version="0.1.0")
 
@@ -46,13 +46,20 @@ app = FastAPI(title="openclaw-molt-mcp Webapp API", version="0.1.0")
 REPO_ROOT = Path(__file__).resolve().parent.parent
 GENERATED_DIR = REPO_ROOT / "generated"
 GENERATED_DIR.mkdir(parents=True, exist_ok=True)
-app.mount(
-    "/generated", StaticFiles(directory=str(GENERATED_DIR), html=True), name="generated"
-)
+app.mount("/generated", StaticFiles(directory=str(GENERATED_DIR), html=True), name="generated")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:10764", "http://127.0.0.1:10764"],
+    allow_origins=[
+        "http://localhost:10744",
+        "http://127.0.0.1:10744",
+        "http://localhost:10745",
+        "http://127.0.0.1:10745",
+        "tauri://localhost",
+        "http://tauri.localhost",
+        "https://tauri.localhost",
+    ],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$|^tauri://localhost$|^https?://tauri\.localhost$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,14 +69,10 @@ app.add_middleware(
 @app.middleware("http")
 async def api_key_middleware(request, call_next):
     """If WEBAPP_API_KEY is set, require X-API-Key on non-health endpoints. Local-only otherwise."""
-    if WEBAPP_API_KEY and not (
-        request.url.path == "/api/health" or request.url.path.startswith("/generated")
-    ):
+    if WEBAPP_API_KEY and not (request.url.path == "/api/health" or request.url.path.startswith("/generated")):
         key = request.headers.get("X-API-Key")
         if key != WEBAPP_API_KEY:
-            return JSONResponse(
-                status_code=401, content={"detail": "Invalid or missing X-API-Key"}
-            )
+            return JSONResponse(status_code=401, content={"detail": "Invalid or missing X-API-Key"})
     return await call_next(request)
 
 
@@ -90,6 +93,92 @@ class AskResponse(BaseModel):
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+# Runtime capability introspection (WEBAPP_STANDARDS.md §1.4, MANDATORY).
+# Tool surface is declared statically because FastMCP registers tools on module
+# import; the webapp process imports only the clients it needs, not every tool module.
+PORTMANTEAU_TOOLS = [
+    "clawd_agent",
+    "clawd_bastion",
+    "clawd_channels",
+    "clawd_gateway",
+    "clawd_moltbook",
+    "clawd_openclaw_disconnect",
+    "clawd_routing",
+    "clawd_security",
+    "clawd_sessions",
+    "clawd_skills",
+    "clawd_voice",
+]
+
+
+@app.get("/api/capabilities")
+def capabilities():
+    """Capability introspection: runtime truth of the tool surface and features."""
+    return {
+        "status": "ok",
+        "server": {"name": "openclaw-molt-mcp", "version": "0.1.0", "fastmcp": "3.4+"},
+        "tool_surface": {
+            "total": len(PORTMANTEAU_TOOLS),
+            "portmanteau_count": len(PORTMANTEAU_TOOLS),
+            "atomic_count": 0,
+            "portmanteau_tools": PORTMANTEAU_TOOLS,
+            "atomic_tools": [],
+        },
+        "features": {
+            "sampling": False,
+            "agentic_workflows": False,
+            "prompts": False,
+            "resources": False,
+            "skills": True,
+        },
+        "inventory": {
+            "workflow_tools": [],
+            "prompt_names": [],
+            "resource_uris": [],
+            "skill_uris": ["skills://list", "skills://read"],
+        },
+        "runtime": {"transport": "dual", "surface_mode": "portmanteau"},
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
+
+
+@app.get("/api/llm/discover")
+async def llm_discover():
+    """Discover available local LLM providers (Ollama + LM Studio), mirroring the LLM probe."""
+    import httpx
+
+    from webapp_api.ollama_client import ollama_health
+
+    providers: list[dict] = []
+    try:
+        ollama_ok = await ollama_health()
+        providers.append(
+            {
+                "id": "ollama",
+                "name": "Ollama",
+                "enabled": bool(ollama_ok),
+                "base_url": OLLAMA_BASE,
+            }
+        )
+    except Exception:
+        providers.append({"id": "ollama", "name": "Ollama", "enabled": False, "base_url": OLLAMA_BASE})
+
+    lmstudio_url = os.environ.get("LM_STUDIO_URL", "http://localhost:1234")
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            r = await client.get(f"{lmstudio_url}/v1/models")
+            lm_ok = r.status_code == 200
+    except Exception:
+        lm_ok = False
+    providers.append({"id": "lm_studio", "name": "LM Studio", "enabled": lm_ok, "base_url": lmstudio_url})
+
+    return {
+        "status": "ok",
+        "providers": providers,
+        "active": "ollama" if providers and providers[0]["enabled"] else "none",
+    }
 
 
 LOG_SERVER_URL = os.environ.get("CLAWD_LOG_SERVER_URL", "http://127.0.0.1:8765")
@@ -261,10 +350,10 @@ def skill_content(name: str):
         content = skill_path.read_text(encoding="utf-8", errors="replace")
         return {"success": True, "name": safe_name, "content": content}
     except OSError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-# Curated recent media (Jan–Feb 2026). Update periodically or add RSS/search later.
+# Curated recent media (Jan-Feb 2026). Update periodically or add RSS/search later.
 CLAW_NEWS = [
     {
         "title": "OpenClaw's AI assistants are now building their own social network",
@@ -285,13 +374,13 @@ CLAW_NEWS = [
         "date": "2026-01",
     },
     {
-        "title": "Model Providers – OpenClaw",
+        "title": "Model Providers - OpenClaw",
         "source": "docs.clawd.bot",
         "url": "https://docs.clawd.bot/concepts/model-providers",
         "date": "2026",
     },
     {
-        "title": "Ollama provider – OpenClaw",
+        "title": "Ollama provider - OpenClaw",
         "source": "docs.clawd.bot",
         "url": "https://docs.clawd.bot/providers/ollama",
         "date": "2026",
@@ -474,7 +563,7 @@ async def ollama_generate_route(req: GenerateRequest):
         )
         return {"success": True, "response": out.get("response", ""), "raw": out}
     except Exception as e:
-        raise HTTPException(status_code=502, detail=str(e))
+        raise HTTPException(status_code=502, detail=str(e)) from e
 
 
 @app.post("/api/ollama/chat")
@@ -500,7 +589,7 @@ async def ollama_chat_route(req: ChatRequest):
             "raw": out,
         }
     except Exception as e:
-        raise HTTPException(status_code=502, detail=str(e))
+        raise HTTPException(status_code=502, detail=str(e)) from e
 
 
 @app.post("/api/ollama/pull")
@@ -510,7 +599,7 @@ async def ollama_pull_route(req: PullRequest):
         out = await ollama_pull(OLLAMA_BASE, req.name.strip())
         return {"success": True, "raw": out}
     except Exception as e:
-        raise HTTPException(status_code=502, detail=str(e))
+        raise HTTPException(status_code=502, detail=str(e)) from e
 
 
 @app.delete("/api/ollama/delete")
@@ -520,7 +609,7 @@ async def ollama_delete_route(req: DeleteRequest):
         await ollama_delete(OLLAMA_BASE, req.name.strip())
         return {"success": True}
     except Exception as e:
-        raise HTTPException(status_code=502, detail=str(e))
+        raise HTTPException(status_code=502, detail=str(e)) from e
 
 
 # --- Channels and routing (Gateway tools; same as clawd_channels / clawd_routing) ---
@@ -596,9 +685,7 @@ class LandingPageRequest(BaseModel):
     features: list[str] = []
     github_url: str = "https://github.com"
     author_name: str = "Developer"
-    author_bio: str = (
-        "I build things. Powered by OpenClaw, Moltbook, and openclaw-molt-mcp."
-    )
+    author_bio: str = "I build things. Powered by OpenClaw, Moltbook, and openclaw-molt-mcp."
     donate_link: str = "#"
     hero_image_keyword: str = "technology"
     include_pictures: bool = True
@@ -638,7 +725,7 @@ async def landing_page_api(req: LandingPageRequest):
             "message": "Landing page ready. Click below to preview.",
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.get("/api/mcp-config/clients")
@@ -725,7 +812,7 @@ async def security_audit():
         result = await asyncio.to_thread(run_full_audit, settings)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/api/routing")

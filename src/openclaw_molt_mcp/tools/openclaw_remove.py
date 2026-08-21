@@ -33,6 +33,20 @@ async def clawd_openclaw_disconnect(ctx: Context) -> dict:
     **Returns**: Message with steps to disconnect (unset env, remove from MCP
     config), optional uninstall of OpenClaw CLI, and optional removal of
     ~/.openclaw. Link to INSTALL.md "Removing OpenClaw" in the repo.
+
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Always True (this tool makes no changes).
+    - `message` (str): "Disconnect and removal steps (no changes made by this tool)".
+    - `data` (dict): `{steps: str, doc_url: str}`.
+
+    ## Examples
+
+    ```
+    clawd_openclaw_disconnect()
+    # {"success": true, "message": "Disconnect and removal steps (no changes made by this tool):", "data": {"steps": "1. Stop the Gateway...", "doc_url": "https://github.com/sandraschi/openclaw-molt-mcp/blob/main/INSTALL.md#removing-openclaw"}}
+    ```
     """
     logger.info(
         "clawd_openclaw_disconnect called",

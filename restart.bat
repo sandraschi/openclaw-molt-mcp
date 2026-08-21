@@ -1,11 +1,9 @@
 @echo off
-REM Hard restart openclaw-molt-mcp
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0web_sota\stop.ps1"
+REM Restart openclaw-molt-mcp via fleet-standard launcher (clears ports, starts backend + frontend)
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0start.ps1"
 if errorlevel 1 (
-    echo stop failed
+    echo start failed
     pause
     exit /b 1
 )
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0web_sota\start.ps1"
 pause
-

@@ -65,6 +65,25 @@ async def clawd_routing(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Routing rules, update result, test routing result, or session lookup.
+      get_routing_rules may fall back to `{agents, source}` read from OpenClaw config.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_routing(operation="get_routing_rules")
+    # {"success": true, "message": "...", "data": {"agents": {...}}}
+
+    clawd_routing(operation="update_routing", channel="discord", agent="main")
+    # {"success": true, "message": "...", "data": {...}}
+    ```
+
     **Fallback:** If the Gateway does not expose the routing tool, get_routing_rules
     may return data read from OpenClaw config (~/.openclaw/openclaw.json) when present.
 
@@ -79,7 +98,7 @@ async def clawd_routing(
     if operation == "update_routing":
         if not (channel and channel.strip()) or not (agent and agent.strip()):
             return {"success": False, "message": "update_routing requires 'channel' and 'agent'."}
-        ctx.info("update_routing is a write operation; use with care")
+        await ctx.info("update_routing is a write operation; use with care")
     if operation == "get_session_by_channel" and not (channel and channel.strip()):
         return {"success": False, "message": "get_session_by_channel requires 'channel'."}
 

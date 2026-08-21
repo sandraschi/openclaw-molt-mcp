@@ -34,6 +34,24 @@ async def clawd_agent(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Response payload from the Gateway (run_agent/send_message).
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_agent(operation="send_message", message="What's the weather?", deliver=False)
+    # {"success": true, "message": "...", "data": {"response": "..."}}
+
+    clawd_agent(operation="wake", message="Heartbeat")
+    # {"success": true, "message": "Wake triggered via openclaw-molt-mcp", "data": {...}}
+    ```
+
     Requires OpenClaw Gateway running at OPENCLAW_GATEWAY_URL with OPENCLAW_GATEWAY_TOKEN
     when gateway auth is enabled. Webhooks require hooks.enabled and hooks.token in config.
     """
@@ -47,7 +65,7 @@ async def clawd_agent(
             return result
 
         if operation == "run_agent":
-            ctx.info("Running isolated agent turn (deliver=False)")
+            await ctx.info("Running isolated agent turn (deliver=False)")
             result = await client.hooks_agent(
                 message=message or "Isolated run triggered via openclaw-molt-mcp",
                 session_key=session_key,
@@ -56,7 +74,7 @@ async def clawd_agent(
             return result
 
         if operation == "send_message":
-            ctx.info("Sending message to agent")
+            await ctx.info("Sending message to agent")
             result = await client.hooks_agent(
                 message=message,
                 session_key=session_key,

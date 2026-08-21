@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 import { cn } from "../../utils/cn";
 
 interface HelpModalProps {
@@ -28,7 +28,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
       <div
         className={cn(
           "mx-4 max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-lg border border-border",
-          "bg-background-secondary shadow-glow animate-fade-in"
+          "bg-background-secondary shadow-glow animate-fade-in",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -41,7 +41,7 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             onClick={onClose}
             className={cn(
               "rounded-md p-2 text-foreground-secondary transition-colors",
-              "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50",
             )}
             aria-label="Close"
           >
@@ -50,27 +50,53 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
         </div>
         <div className="space-y-4 px-6 py-4 text-sm text-foreground-secondary">
           <p>
-            <strong className="text-foreground">openclaw-molt-mcp</strong> bridges Cursor
-            and Claude Desktop with the OpenClaw and Moltbook ecosystem.
+            <strong className="text-foreground">openclaw-molt-mcp</strong> bridges Cursor and Claude
+            Desktop with the OpenClaw and Moltbook ecosystem.
           </p>
           <section>
             <h3 className="mb-2 font-medium text-foreground">MCP Tools</h3>
             <ul className="list-inside list-disc space-y-1">
-              <li><code className="rounded bg-muted px-1.5 py-0.5">clawd_agent</code> – Invoke agent, wake, send messages</li>
-              <li><code className="rounded bg-muted px-1.5 py-0.5">clawd_sessions</code> – List sessions, history, agent messaging</li>
-              <li><code className="rounded bg-muted px-1.5 py-0.5">clawd_skills</code> – List and read skills</li>
-              <li><code className="rounded bg-muted px-1.5 py-0.5">clawd_gateway</code> – Status, health, doctor</li>
-              <li><code className="rounded bg-muted px-1.5 py-0.5">clawd_security</code> – Audit, hardening, sandbox</li>
-              <li><code className="rounded bg-muted px-1.5 py-0.5">clawd_moltbook</code> – Feed, post, comment, heartbeat</li>
+              <li>
+                <code className="rounded bg-muted px-1.5 py-0.5">clawd_agent</code> – Invoke agent,
+                wake, send messages
+              </li>
+              <li>
+                <code className="rounded bg-muted px-1.5 py-0.5">clawd_sessions</code> – List
+                sessions, history, agent messaging
+              </li>
+              <li>
+                <code className="rounded bg-muted px-1.5 py-0.5">clawd_skills</code> – List and read
+                skills
+              </li>
+              <li>
+                <code className="rounded bg-muted px-1.5 py-0.5">clawd_gateway</code> – Status,
+                health, doctor
+              </li>
+              <li>
+                <code className="rounded bg-muted px-1.5 py-0.5">clawd_security</code> – Audit,
+                hardening, sandbox
+              </li>
+              <li>
+                <code className="rounded bg-muted px-1.5 py-0.5">clawd_moltbook</code> – Feed, post,
+                comment, heartbeat
+              </li>
             </ul>
           </section>
           <section>
             <h3 className="mb-2 font-medium text-foreground">How this was made</h3>
             <p className="mb-2">
-              Planned by vibecode architect sandraschi, in beautiful Vienna (Alsergrund); implementation by Cursor (agentic IDE) with various LLMs. Scaffold, implement, test harness, debug, iterate. One day, token cost zilch. If you are an AI-luddite or butlerite, feel free to hate on it.
+              Planned by vibecode architect sandraschi, in beautiful Vienna (Alsergrund);
+              implementation by Cursor (agentic IDE) with various LLMs. Scaffold, implement, test
+              harness, debug, iterate. One day, token cost zilch. If you are an AI-luddite or
+              butlerite, feel free to hate on it.
             </p>
             <p className="mb-2">
-              <a href="https://github.com/sandraschi/openclaw-molt-mcp/blob/main/docs/HOW_THIS_WAS_MADE.md" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+              <a
+                href="https://github.com/sandraschi/openclaw-molt-mcp/blob/main/docs/HOW_THIS_WAS_MADE.md"
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary hover:underline"
+              >
                 docs/HOW_THIS_WAS_MADE.md
               </a>
             </p>
@@ -79,17 +105,32 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
             <h3 className="mb-2 font-medium text-foreground">Links</h3>
             <ul className="space-y-1">
               <li>
-                <a href="https://openclaw.ai" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                <a
+                  href="https://openclaw.ai"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
                   openclaw.ai
                 </a>
               </li>
               <li>
-                <a href="https://moltbook.com" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                <a
+                  href="https://moltbook.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
                   moltbook.com
                 </a>
               </li>
               <li>
-                <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                <a
+                  href="https://docs.openclaw.ai"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
                   docs.openclaw.ai
                 </a>
               </li>
@@ -100,4 +141,3 @@ export default function HelpModal({ isOpen, onClose }: HelpModalProps) {
     </div>
   );
 }
-

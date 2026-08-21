@@ -1,7 +1,8 @@
 import { Activity, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { cn } from "../utils/cn";
+import { useTauriBackend } from "../hooks/useTauri";
 import { fetchHealthAggregate, type HealthAggregateResponse } from "../services/api";
+import { cn } from "../utils/cn";
 
 const FIX_LINKS: Record<string, string> = {
   openclaw_cli: "https://docs.openclaw.ai",
@@ -25,6 +26,7 @@ export default function Health() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
+  const { inTauri, status: tauriStatus, message: tauriMessage } = useTauriBackend();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -48,9 +50,7 @@ export default function Health() {
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Health
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Health</h1>
         <p className="mt-2 text-foreground-secondary">
           Unified status: Gateway, OpenClaw CLI, Moltbook, Ollama, API, log server.
         </p>
@@ -58,9 +58,7 @@ export default function Health() {
 
       <section className="rounded-lg border border-border bg-card p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-mono text-xl font-semibold text-foreground">
-            Status
-          </h2>
+          <h2 className="font-mono text-xl font-semibold text-foreground">Status</h2>
           <button
             type="button"
             onClick={load}
@@ -73,14 +71,40 @@ export default function Health() {
         </div>
 
         {lastCheck && (
-          <p className="mb-4 text-xs text-muted">
-            Last check: {lastCheck.toLocaleString()}
-          </p>
+          <p className="mb-4 text-xs text-muted">Last check: {lastCheck.toLocaleString()}</p>
         )}
 
         {error && (
           <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
             {error}
+          </div>
+        )}
+
+        {inTauri && (
+          <div
+            className={cn(
+              "mb-4 flex items-center justify-between rounded-lg border px-4 py-3",
+              tauriStatus === "ready"
+                ? "border-green-500/50 bg-green-500/5"
+                : "border-destructive/30 bg-destructive/5",
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "h-3 w-3 rounded-full",
+                  tauriStatus === "ready" ? "bg-green-500" : "bg-destructive",
+                )}
+              />
+              <div>
+                <p className="font-medium">Desktop backend</p>
+                <p className="text-sm text-foreground-secondary">
+                  {tauriStatus === "ready"
+                    ? "Native backend attached"
+                    : tauriMessage || "Starting native backend..."}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -93,14 +117,14 @@ export default function Health() {
                   "flex items-center justify-between rounded-lg border px-4 py-3",
                   check.ok
                     ? "border-green-500/50 bg-green-500/5"
-                    : "border-destructive/30 bg-destructive/5"
+                    : "border-destructive/30 bg-destructive/5",
                 )}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
                       "h-3 w-3 rounded-full",
-                      check.ok ? "bg-green-500" : "bg-destructive"
+                      check.ok ? "bg-green-500" : "bg-destructive",
                     )}
                   />
                   <div>
@@ -127,7 +151,7 @@ export default function Health() {
           <div
             className={cn(
               "flex min-h-[120px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 p-8",
-              "text-center text-foreground-secondary"
+              "text-center text-foreground-secondary",
             )}
           >
             <Activity className="mb-2 h-10 w-10 text-muted" />

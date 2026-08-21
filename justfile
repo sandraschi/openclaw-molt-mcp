@@ -9,20 +9,20 @@ default:
 
 # --- Quality ---
 
-# Execute Ruff SOTA v13.1 linting
+# Lint (ruff + biome)
 lint:
     Set-Location '{{justfile_directory()}}'
     uv run ruff check .
-    Set-Location '{{justfile_directory()}}\web_sota'
-    npx @biomejs/biome ci .
+    Set-Location '{{justfile_directory()}}\webapp'
+    bun run lint
 
-# Execute Ruff SOTA v13.1 fix and formatting
+# Fix and format (ruff + biome)
 fix:
     Set-Location '{{justfile_directory()}}'
     uv run ruff check . --fix --unsafe-fixes
     uv run ruff format .
-    Set-Location '{{justfile_directory()}}\web_sota'
-    npx @biomejs/biome check --write .
+    Set-Location '{{justfile_directory()}}\webapp'
+    bun run check
 
 # --- Hardening ---
 
@@ -42,9 +42,9 @@ stats:
     uv run python tools/repo_stats.py
 
 check:
-    uv run ruff check src tests
-    uv run ruff format --check src tests
-    uv run mypy src
+    uv run ruff check src tests webapp_api
+    uv run ruff format --check src tests webapp_api
+    uv run pyright src webapp_api
     uv run pytest tests -v
 
 test:
@@ -54,7 +54,7 @@ test-cov:
     uv run pytest tests -v --cov=openclaw_molt_mcp --cov-report=term-missing
 
 typecheck:
-    uv run mypy src
+    uv run pyright src webapp_api
 
 # MCPB package: copy src into mcpb then pack (current standard). Output: dist/openclaw-molt-mcp-<version>.mcpb
 mcpb:

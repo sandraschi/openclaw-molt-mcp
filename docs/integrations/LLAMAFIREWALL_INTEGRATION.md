@@ -79,8 +79,10 @@ from llamafirewall.messages import UserMessage
 app = FastAPI()
 lf = LlamaFirewall(scanners={Role.USER: [ScannerType.PROMPT_GUARD]})
 
+
 class ScanRequest(BaseModel):
     content: str
+
 
 @app.post("/scan")
 def scan(req: ScanRequest):

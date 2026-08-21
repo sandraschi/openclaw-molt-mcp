@@ -1,22 +1,22 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import LogBootstrap from "./components/LogBootstrap";
-import Startpage from "./pages/Startpage";
 import AI from "./pages/AI";
 import Channels from "./pages/Channels";
-import RoutesPage from "./pages/Routes";
-import Diagram from "./pages/Diagram";
-import Statistics from "./pages/Statistics";
-import Moltbook from "./pages/Moltbook";
-import Integrations from "./pages/Integrations";
-import Sessions from "./pages/Sessions";
-import Onboarding from "./pages/Onboarding";
-import Health from "./pages/Health";
 import Clawnews from "./pages/Clawnews";
-import Skills from "./pages/Skills";
+import Diagram from "./pages/Diagram";
+import Health from "./pages/Health";
+import Integrations from "./pages/Integrations";
+import Moltbook from "./pages/Moltbook";
+import Onboarding from "./pages/Onboarding";
+import RoutesPage from "./pages/Routes";
 import Security from "./pages/Security";
+import Sessions from "./pages/Sessions";
 import SettingsPage from "./pages/Settings";
+import Skills from "./pages/Skills";
 import StarterPage from "./pages/StarterPage";
+import Startpage from "./pages/Startpage";
+import Statistics from "./pages/Statistics";
 
 function App() {
   return (

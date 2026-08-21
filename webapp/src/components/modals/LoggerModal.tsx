@@ -1,7 +1,7 @@
+import { RefreshCw, Trash2, X } from "lucide-react";
 import { useCallback, useEffect } from "react";
-import { X, RefreshCw, Trash2 } from "lucide-react";
-import { cn } from "../../utils/cn";
 import { useLog } from "../../context/LogContext";
+import { cn } from "../../utils/cn";
 
 interface LoggerModalProps {
   isOpen: boolean;
@@ -38,14 +38,7 @@ function levelColor(level: string): string {
 }
 
 export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
-  const {
-    entries,
-    clearLogs,
-    fetchLogs,
-    fetchError,
-    logServerUrl,
-    setLogServerUrl,
-  } = useLog();
+  const { entries, clearLogs, fetchLogs, fetchError, logServerUrl, setLogServerUrl } = useLog();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -77,15 +70,12 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
       <div
         className={cn(
           "mx-4 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-lg border border-border",
-          "bg-background-secondary shadow-glow animate-fade-in overflow-hidden"
+          "bg-background-secondary shadow-glow animate-fade-in overflow-hidden",
         )}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-4 py-3">
-          <h2
-            id="logger-title"
-            className="font-mono text-lg font-semibold text-foreground"
-          >
+          <h2 id="logger-title" className="font-mono text-lg font-semibold text-foreground">
             Logger
           </h2>
           <div className="flex items-center gap-2">
@@ -96,7 +86,7 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
               placeholder="Log server URL"
               className={cn(
                 "w-48 rounded border border-border bg-background px-2 py-1.5 font-mono text-xs text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
               title="Log server URL (e.g. http://127.0.0.1:8765/api/logs)"
             />
@@ -105,7 +95,7 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
               onClick={handleRefresh}
               className={cn(
                 "rounded-md p-2 text-foreground-secondary transition-colors",
-                "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+                "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50",
               )}
               aria-label="Refresh logs"
               title="Fetch logs from server"
@@ -117,7 +107,7 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
               onClick={clearLogs}
               className={cn(
                 "rounded-md p-2 text-foreground-secondary transition-colors",
-                "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+                "hover:bg-muted hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50",
               )}
               aria-label="Clear logs"
               title="Clear log buffer"
@@ -129,7 +119,7 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
               onClick={onClose}
               className={cn(
                 "rounded-md p-2 text-foreground-secondary transition-colors",
-                "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                "hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50",
               )}
               aria-label="Close"
             >
@@ -139,15 +129,16 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
         </div>
         {fetchError != null && (
           <div className="shrink-0 border-b border-border bg-muted/50 px-4 py-2 text-xs text-amber-400">
-            Server error: {fetchError}. Ensure the webapp API (port 5181) is running, or set a custom log URL (e.g. http://127.0.0.1:8765/api/logs after running: python -m openclaw_molt_mcp.serve_logs).
+            Server error: {fetchError}. Ensure the webapp API (port 10745) is running, or set a
+            custom log URL (e.g. http://127.0.0.1:8765/api/logs after running: python -m
+            openclaw_molt_mcp.serve_logs).
           </div>
         )}
         <div className="flex-1 overflow-y-auto bg-background p-4 font-mono text-xs">
           {entries.length === 0 ? (
             <p className="text-foreground-tertiary">
-              No log entries. Logs are read from the API (same backend as the
-              dashboard). Run the MCP server to generate entries, then click
-              Refresh.
+              No log entries. Logs are read from the API (same backend as the dashboard). Run the
+              MCP server to generate entries, then click Refresh.
             </p>
           ) : (
             <ul className="space-y-1">
@@ -156,27 +147,16 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
                   key={e.id}
                   className={cn(
                     "flex flex-wrap gap-x-2 gap-y-0.5 border-b border-border/50 py-1",
-                    levelColor(e.level)
+                    levelColor(e.level),
                   )}
                 >
-                  <span className="shrink-0 text-foreground-tertiary">
-                    {formatTs(e.ts)}
-                  </span>
-                  <span
-                    className={cn(
-                      "shrink-0 font-semibold",
-                      levelColor(e.level)
-                    )}
-                  >
+                  <span className="shrink-0 text-foreground-tertiary">{formatTs(e.ts)}</span>
+                  <span className={cn("shrink-0 font-semibold", levelColor(e.level))}>
                     [{e.level}]
                   </span>
-                  {e.tool != null && (
-                    <span className="shrink-0 text-primary">{e.tool}</span>
-                  )}
+                  {e.tool != null && <span className="shrink-0 text-primary">{e.tool}</span>}
                   {e.operation != null && (
-                    <span className="shrink-0 text-foreground-tertiary">
-                      {e.operation}
-                    </span>
+                    <span className="shrink-0 text-foreground-tertiary">{e.operation}</span>
                   )}
                   <span className="min-w-0 flex-1 break-all">{e.msg}</span>
                 </li>
@@ -188,4 +168,3 @@ export default function LoggerModal({ isOpen, onClose }: LoggerModalProps) {
     </div>
   );
 }
-

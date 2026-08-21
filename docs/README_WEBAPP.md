@@ -85,20 +85,20 @@ From repo root:
 ```powershell
 pip install -e ".[webapp-api]"
 $env:PYTHONPATH = "src"
-uvicorn webapp_api.main:app --reload --port 5181
+uvicorn webapp_api.main:app --reload --port 10745
 ```
 
 **2. Webapp:**
 
 ```bash
 cd webapp
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
-Port: **5180**. Vite proxies `/api` to http://127.0.0.1:5181.
+Port: **10744**. Vite proxies `/api` to http://127.0.0.1:10745.
 
-**One-shot start (two windows):** From repo root run `.\scripts\start.ps1` (PowerShell) or `scripts\start.bat` (CMD). Scripts kill processes on ports 5181 and 5180, close their parent PowerShell windows, and kill watchfiles (uvicorn --reload) only for this project; wait 2s; then start API and webapp in separate windows. Windows stay open on exit (PowerShell: Read-Host; CMD: pause) so errors are visible.
+**One-shot start (two windows):** From repo root run `.\scripts\start.ps1` (PowerShell) or `scripts\start.bat` (CMD). Scripts kill processes on ports 10745 and 10744, close their parent PowerShell windows, and kill watchfiles (uvicorn --reload) only for this project; wait 2s; then start API and webapp in separate windows. Windows stay open on exit (PowerShell: Read-Host; CMD: pause) so errors are visible.
 
 ## OpenClaw install banner
 
@@ -122,7 +122,7 @@ Environment: `CLAWD_LOG_SERVER_PORT` (default 8765), `CLAWD_LOG_SERVER_HOST` (de
 ## Build
 
 ```bash
-npm run build
+bun run build
 ```
 
 Output: `webapp/dist/`
@@ -138,7 +138,7 @@ Output: `webapp/dist/`
 - **Moltbook**: Prepare a Moltbook agent draft (name, bio, personality, goals, post ideas). Draft saved to localStorage; when OpenClaw is installed, **Register with Moltbook** sends the registration request to Moltbook (`POST /api/moltbook/register`). Links to Moltbook docs and skill.
 - **Integrations**: Gateway status and installed skills (single source from OpenClaw; not duplication)
 - **Clawnews**: Today’s media echo – curated OpenClaw/Moltbook news and docs
-- **Generate**: Landing pages, OpenClaw env/config snippet, and MCP config snippet. **Landing page**: static site (hero, features, bio, download, donate, Ecosystem). Form: project name, hero title, subtitle, features, author, GitHub, donate, hero image keyword, include pictures. `POST /api/landing-page`; output in repo `generated/<slug>/www/`; preview at `http://localhost:5181/generated/<slug>/www/index.html`. **OpenClaw env snippet**: Gateway URL + optional token → .env.example and routing hint. **MCP config snippet**: insert openclaw-molt-mcp into selected client configs (Cursor, Claude Desktop, Windsurf, Zed, Antigravity, LM Studio) with backup; Windsurf config at `%USERPROFILE%\.codeium\windsurf\mcp_config.json`. See [INSTALL.md](../INSTALL.md#mcp-client-config-locations).
+- **Generate**: Landing pages, OpenClaw env/config snippet, and MCP config snippet. **Landing page**: static site (hero, features, bio, download, donate, Ecosystem). Form: project name, hero title, subtitle, features, author, GitHub, donate, hero image keyword, include pictures. `POST /api/landing-page`; output in repo `generated/<slug>/www/`; preview at `http://localhost:10745/generated/<slug>/www/index.html`. **OpenClaw env snippet**: Gateway URL + optional token → .env.example and routing hint. **MCP config snippet**: insert openclaw-molt-mcp into selected client configs (Cursor, Claude Desktop, Windsurf, Zed, Antigravity, LM Studio) with backup; Windsurf config at `%USERPROFILE%\.codeium\windsurf\mcp_config.json`. See [INSTALL.md](../INSTALL.md#mcp-client-config-locations).
 - **Skills**, **Settings**: Placeholders / TBD
 - **Security**: Security page intro, TBD audit/hardening; **Remove OpenClaw** section with steps (disconnect env, uninstall CLI, remove config) and link to [INSTALL.md#removing-openclaw](../INSTALL.md#removing-openclaw). MCP tool `clawd_openclaw_disconnect` returns same steps (no side effects).
 
@@ -160,7 +160,7 @@ The **AI** page proxies to local Ollama (default `http://localhost:11434`). Endp
 - **Diagram**: Renders three Mermaid flowcharts (OpenClaw system; openclaw-molt-mcp and webapp; full system). Uses `mermaid` (^11). Theme: dark. No API calls.
 - **Statistics**: Fetches Gateway status and routing rules; shows current snapshot table and routing topology. Placeholder for time-series (MCP calls, agents sent to Moltbook) until `GET /api/stats` or log aggregation exists.
 - **Moltbook**: Prepare-agent form (name, bio, personality, goals, post ideas). Draft saved to `localStorage` key `openclaw-molt-mcp-moltbook-agent-draft`. When OpenClaw is installed, **Register with Moltbook** button sends `POST /api/moltbook/register` to register the agent with Moltbook (requires MOLTBOOK_API_KEY). Links to moltbook.com, skill.md, heartbeat.md.
-- **Generate landing**: Form posts to `POST /api/landing-page`. Backend `webapp_api/landing_page_service.py` writes static site to repo `generated/<slug>/www/` (or `LANDING_PAGE_OUTPUT_DIR`): index, how_it_works, ecosystem, download, donate, bio, styles.css, script.js, plus `DEPLOY.md` in parent. Response includes `index_url`: `http://localhost:5181/generated/<slug>/www/index.html` (API serves `/generated` as static files for preview). Options: hero image keyword (default blue lobster), include pictures. Ecosystem page: OpenClaw, openclaw-molt-mcp, Moltbook (descriptions + links), news/coverage, reviewers (Matthew Berman, Simon Willison, AI Explained). Page shows "How to get online" (GitHub Pages, Netlify, Vercel, Cloudflare Pages).
+- **Generate landing**: Form posts to `POST /api/landing-page`. Backend `webapp_api/landing_page_service.py` writes static site to repo `generated/<slug>/www/` (or `LANDING_PAGE_OUTPUT_DIR`): index, how_it_works, ecosystem, download, donate, bio, styles.css, script.js, plus `DEPLOY.md` in parent. Response includes `index_url`: `http://localhost:10745/generated/<slug>/www/index.html` (API serves `/generated` as static files for preview). Options: hero image keyword (default blue lobster), include pictures. Ecosystem page: OpenClaw, openclaw-molt-mcp, Moltbook (descriptions + links), news/coverage, reviewers (Matthew Berman, Simon Willison, AI Explained). Page shows "How to get online" (GitHub Pages, Netlify, Vercel, Cloudflare Pages).
 
 ## Webapp API endpoints (summary)
 

@@ -35,7 +35,7 @@ Repo manifests (root): [../llms.txt](../llms.txt) (LLM-friendly manifest; Giting
 |--------|-------------|
 | `scripts/install.ps1` | PowerShell: pip install -e ".[dev]", npm install in webapp (one-time after clone) |
 | `scripts/install.bat` | CMD: same |
-| `scripts/start.ps1` | PowerShell: kill 5181/5180, close their parent windows, kill project-scoped watchfiles; start API and webapp in two windows; pause on exit |
+| `scripts/start.ps1` | PowerShell: kill 10745/10744, close their parent windows, kill project-scoped watchfiles; start API and webapp in two windows; pause on exit |
 | `scripts/start.bat` | CMD: same; uses netstat/taskkill and pause |
 | `scripts/check.ps1` | Ruff, mypy, pytest (`-All` or `-Ruff`, `-Mypy`, `-Test`) |
 | `scripts/serve_logs.ps1` | Log server for webapp Logger modal (default http://127.0.0.1:8765) |

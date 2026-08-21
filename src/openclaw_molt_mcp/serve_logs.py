@@ -69,9 +69,9 @@ class LogsHandler(BaseHTTPRequestHandler):
         if req_origin in DEFAULT_CORS_ORIGINS:
             origin = req_origin
         else:
-            origin = os.environ.get("CLAWD_LOG_CORS_ORIGIN", "http://localhost:5180")
+            origin = os.environ.get("CLAWD_LOG_CORS_ORIGIN", "http://localhost:10744")
             if origin not in DEFAULT_CORS_ORIGINS:
-                origin = "http://localhost:5180"
+                origin = "http://localhost:10744"
         self.send_header("Access-Control-Allow-Origin", origin)
         self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
@@ -105,10 +105,10 @@ class LogsHandler(BaseHTTPRequestHandler):
 
 
 DEFAULT_CORS_ORIGINS = (
-    "http://localhost:5180",
-    "http://127.0.0.1:5180",
-    "http://localhost:5181",
-    "http://127.0.0.1:5181",
+    "http://localhost:10744",
+    "http://127.0.0.1:10744",
+    "http://localhost:10745",
+    "http://127.0.0.1:10745",
 )
 
 

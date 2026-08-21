@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronRight, MessageSquare } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { cn } from "../utils/cn";
 import { sessionsApi } from "../services/api";
+import { cn } from "../utils/cn";
 
 interface SessionItem {
   key?: string;
@@ -44,32 +44,35 @@ export default function Sessions() {
     loadSessions();
   }, [loadSessions]);
 
-  const handleExpand = useCallback(async (sessionKey: string) => {
-    if (expanded === sessionKey) {
-      setExpanded(null);
-      setHistory(null);
-      return;
-    }
-    setExpanded(sessionKey);
-    setHistoryLoading(true);
-    setHistory(null);
-    try {
-      const res = await sessionsApi({
-        operation: "history",
-        session_key: sessionKey,
-        args: {},
-      });
-      if (res.success) {
-        setHistory(res.data);
-      } else {
-        setHistory({ error: res.message ?? res.error });
+  const handleExpand = useCallback(
+    async (sessionKey: string) => {
+      if (expanded === sessionKey) {
+        setExpanded(null);
+        setHistory(null);
+        return;
       }
-    } catch (e) {
-      setHistory({ error: e instanceof Error ? e.message : "Failed to load history" });
-    } finally {
-      setHistoryLoading(false);
-    }
-  }, [expanded]);
+      setExpanded(sessionKey);
+      setHistoryLoading(true);
+      setHistory(null);
+      try {
+        const res = await sessionsApi({
+          operation: "history",
+          session_key: sessionKey,
+          args: {},
+        });
+        if (res.success) {
+          setHistory(res.data);
+        } else {
+          setHistory({ error: res.message ?? res.error });
+        }
+      } catch (e) {
+        setHistory({ error: e instanceof Error ? e.message : "Failed to load history" });
+      } finally {
+        setHistoryLoading(false);
+      }
+    },
+    [expanded],
+  );
 
   const sessionList = Array.isArray(sessions) ? sessions : [];
   const sessionKeys =
@@ -80,9 +83,7 @@ export default function Sessions() {
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Sessions
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Sessions</h1>
         <p className="mt-2 text-foreground-secondary">
           OpenClaw sessions (agents). List and view history transcripts.
         </p>
@@ -92,7 +93,7 @@ export default function Sessions() {
         <section
           className={cn(
             "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-12",
-            "text-center text-foreground-secondary"
+            "text-center text-foreground-secondary",
           )}
         >
           <p className="font-medium text-foreground">Loading sessions...</p>
@@ -101,7 +102,7 @@ export default function Sessions() {
         <section
           className={cn(
             "rounded-lg border border-destructive/50 bg-destructive/10 p-6",
-            "text-destructive"
+            "text-destructive",
           )}
         >
           <p className="font-medium">{error}</p>
@@ -109,16 +110,13 @@ export default function Sessions() {
       ) : (
         <section className="space-y-3">
           {sessionKeys.map((key) => (
-            <div
-              key={key}
-              className="rounded-lg border border-border bg-card overflow-hidden"
-            >
+            <div key={key} className="rounded-lg border border-border bg-card overflow-hidden">
               <button
                 type="button"
                 onClick={() => handleExpand(key)}
                 className={cn(
                   "flex w-full items-center gap-2 px-4 py-3 text-left font-medium text-foreground",
-                  "hover:bg-muted/50 transition-colors"
+                  "hover:bg-muted/50 transition-colors",
                 )}
               >
                 {expanded === key ? (
@@ -151,7 +149,7 @@ export default function Sessions() {
         <section
           className={cn(
             "flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-12",
-            "text-center text-foreground-secondary"
+            "text-center text-foreground-secondary",
           )}
         >
           <MessageSquare className="mb-4 h-12 w-12 text-muted" />

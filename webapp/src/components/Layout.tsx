@@ -1,11 +1,11 @@
-import { ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { cn } from "../utils/cn";
-import Topbar from "./Topbar";
-import Sidebar from "./Sidebar";
-import OpenClawInstallBanner from "./OpenClawInstallBanner";
+import AuthModal from "./modals/AuthModal";
 import HelpModal from "./modals/HelpModal";
 import LoggerModal from "./modals/LoggerModal";
-import AuthModal from "./modals/AuthModal";
+import OpenClawInstallBanner from "./OpenClawInstallBanner";
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -28,12 +28,7 @@ export default function Layout({ children }: LayoutProps) {
       />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar collapsed={sidebarCollapsed} />
-        <main
-          className={cn(
-            "flex-1 overflow-y-auto px-6 py-8",
-            "animate-fade-in"
-          )}
-        >
+        <main className={cn("flex-1 overflow-y-auto px-6 py-8", "animate-fade-in")}>
           <OpenClawInstallBanner />
           {children}
         </main>

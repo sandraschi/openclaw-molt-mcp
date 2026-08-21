@@ -63,12 +63,14 @@ def list_clients() -> list[dict[str, Any]]:
     result = []
     for cid in CLIENT_PATHS:
         path = _resolve_path(cid)
-        result.append({
-            "id": cid,
-            "label": CLIENT_LABELS.get(cid, cid),
-            "path": str(path) if path else None,
-            "exists": path.exists() if path else False,
-        })
+        result.append(
+            {
+                "id": cid,
+                "label": CLIENT_LABELS.get(cid, cid),
+                "path": str(path) if path else None,
+                "exists": path.exists() if path else False,
+            }
+        )
     return result
 
 
@@ -116,7 +118,12 @@ def insert_into_config(
         data[servers_key] = {}
         servers = data[servers_key]
     if not isinstance(servers, dict):
-        return {"updated": False, "skipped": False, "backup_path": None, "error": f"Unexpected structure: {servers_key} is not an object"}
+        return {
+            "updated": False,
+            "skipped": False,
+            "backup_path": None,
+            "error": f"Unexpected structure: {servers_key} is not an object",
+        }
     if SERVER_KEY in servers:
         return {"updated": False, "skipped": True, "backup_path": None, "error": None}
     backup_path = path.with_suffix(path.suffix + ".backup-" + datetime.now().strftime("%Y%m%d-%H%M%S"))

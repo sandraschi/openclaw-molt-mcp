@@ -1,11 +1,7 @@
+import { AlertCircle, Loader2, Route } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Route, Loader2, AlertCircle } from "lucide-react";
+import { type RoutingRequest, type RoutingResponse, routingApi } from "../services/api";
 import { cn } from "../utils/cn";
-import {
-  routingApi,
-  type RoutingResponse,
-  type RoutingRequest,
-} from "../services/api";
 
 export default function RoutesPage() {
   const [rulesResult, setRulesResult] = useState<RoutingResponse | null>(null);
@@ -115,16 +111,17 @@ export default function RoutesPage() {
   }
 
   const rulesData = rulesResult?.data as Record<string, unknown> | undefined;
-  const agentsMap = rulesData?.agents as Record<string, string> | undefined ?? (rulesData && !Array.isArray(rulesData) ? rulesData as Record<string, string> : {});
+  const agentsMap =
+    (rulesData?.agents as Record<string, string> | undefined) ??
+    (rulesData && !Array.isArray(rulesData) ? (rulesData as Record<string, string>) : {});
 
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Routes
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Routes</h1>
         <p className="mt-2 text-foreground-secondary">
-          View and control channel-to-agent routing. Get rules, update mappings, test routing, lookup session by channel.
+          View and control channel-to-agent routing. Get rules, update mappings, test routing,
+          lookup session by channel.
         </p>
       </section>
 
@@ -171,10 +168,11 @@ export default function RoutesPage() {
               </div>
             ) : (
               <p className="text-sm text-foreground-secondary">
-                {rulesResult.message ?? "No routing rules. Gateway may not expose routing tool; check OpenClaw config."}
+                {rulesResult.message ??
+                  "No routing rules. Gateway may not expose routing tool; check OpenClaw config."}
               </p>
             )}
-            {rulesData?.source && (
+            {!!rulesData?.source && (
               <p className="mt-2 text-xs text-foreground-secondary">
                 Source: {String(rulesData.source)}
               </p>
@@ -188,9 +186,7 @@ export default function RoutesPage() {
       </section>
 
       <section className="rounded-lg border border-border bg-card p-6">
-        <h2 className="font-mono text-xl font-semibold text-foreground">
-          Update routing
-        </h2>
+        <h2 className="font-mono text-xl font-semibold text-foreground">Update routing</h2>
         <p className="mt-1 text-sm text-foreground-secondary">
           Change channel-to-agent mapping (write; use with care).
         </p>
@@ -204,7 +200,7 @@ export default function RoutesPage() {
               placeholder="e.g. whatsapp"
               className={cn(
                 "w-40 rounded border border-border bg-background px-3 py-1.5 text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -217,7 +213,7 @@ export default function RoutesPage() {
               placeholder="e.g. main"
               className={cn(
                 "w-40 rounded border border-border bg-background px-3 py-1.5 text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </label>
@@ -227,23 +223,26 @@ export default function RoutesPage() {
             disabled={updateLoading || !updateChannel.trim() || !updateAgent.trim()}
             className={cn(
               "rounded border border-primary bg-primary px-3 py-1.5 text-sm text-primary-foreground",
-              "hover:bg-primary/90 disabled:opacity-50"
+              "hover:bg-primary/90 disabled:opacity-50",
             )}
           >
             {updateLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Update"}
           </button>
         </div>
         {updateResult && (
-          <p className={cn("mt-2 text-sm", updateResult.success ? "text-foreground-secondary" : "text-amber-400")}>
+          <p
+            className={cn(
+              "mt-2 text-sm",
+              updateResult.success ? "text-foreground-secondary" : "text-amber-400",
+            )}
+          >
             {updateResult.message}
           </p>
         )}
       </section>
 
       <section className="rounded-lg border border-border bg-card p-6">
-        <h2 className="font-mono text-xl font-semibold text-foreground">
-          Test routing
-        </h2>
+        <h2 className="font-mono text-xl font-semibold text-foreground">Test routing</h2>
         <p className="mt-1 text-sm text-foreground-secondary">
           Simulate inbound message routing (dry-run).
         </p>
@@ -256,7 +255,7 @@ export default function RoutesPage() {
               placeholder="Channel (optional)"
               className={cn(
                 "w-40 rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
             <input
@@ -266,7 +265,7 @@ export default function RoutesPage() {
               placeholder="Peer (optional)"
               className={cn(
                 "w-40 rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground",
-                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
               )}
             />
           </div>
@@ -277,7 +276,7 @@ export default function RoutesPage() {
             placeholder="Body (optional)"
             className={cn(
               "rounded border border-border bg-background px-3 py-1.5 text-sm text-foreground",
-              "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
             )}
           />
           <button
@@ -286,7 +285,7 @@ export default function RoutesPage() {
             disabled={testLoading}
             className={cn(
               "w-fit rounded border border-primary bg-primary px-3 py-1.5 text-sm text-primary-foreground",
-              "hover:bg-primary/90 disabled:opacity-50"
+              "hover:bg-primary/90 disabled:opacity-50",
             )}
           >
             {testLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Test"}
@@ -300,9 +299,7 @@ export default function RoutesPage() {
       </section>
 
       <section className="rounded-lg border border-border bg-card p-6">
-        <h2 className="font-mono text-xl font-semibold text-foreground">
-          Get session by channel
-        </h2>
+        <h2 className="font-mono text-xl font-semibold text-foreground">Get session by channel</h2>
         <p className="mt-1 text-sm text-foreground-secondary">
           Find session from channel and optional peer.
         </p>
@@ -314,7 +311,7 @@ export default function RoutesPage() {
             placeholder="Channel"
             className={cn(
               "w-40 rounded border border-border bg-background px-3 py-1.5 text-foreground",
-              "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
             )}
           />
           <input
@@ -324,7 +321,7 @@ export default function RoutesPage() {
             placeholder="Peer (optional)"
             className={cn(
               "w-40 rounded border border-border bg-background px-3 py-1.5 text-foreground",
-              "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              "focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary",
             )}
           />
           <button
@@ -333,7 +330,7 @@ export default function RoutesPage() {
             disabled={sessionLoading || !sessionChannel.trim()}
             className={cn(
               "rounded border border-primary bg-primary px-3 py-1.5 text-sm text-primary-foreground",
-              "hover:bg-primary/90 disabled:opacity-50"
+              "hover:bg-primary/90 disabled:opacity-50",
             )}
           >
             {sessionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Lookup"}

@@ -90,6 +90,6 @@ async def ollama_delete(base: str, name: str) -> dict:
     """DELETE /api/delete. name: model name."""
     url = f"{base.rstrip('/')}/api/delete"
     async with httpx.AsyncClient(timeout=30.0) as client:
-        r = await client.delete(url, json={"name": name})
+        r = await client.request("DELETE", url, json={"name": name})
         r.raise_for_status()
         return r.json() if r.content else {}

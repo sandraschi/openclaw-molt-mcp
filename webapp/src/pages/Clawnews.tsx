@@ -1,7 +1,7 @@
+import { ExternalLink, Newspaper } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Newspaper, ExternalLink } from "lucide-react";
+import { type ClawNewsItem, fetchClawNews } from "../services/api";
 import { cn } from "../utils/cn";
-import { fetchClawNews, type ClawNewsItem } from "../services/api";
 
 export default function Clawnews() {
   const [items, setItems] = useState<ClawNewsItem[]>([]);
@@ -30,11 +30,10 @@ export default function Clawnews() {
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="font-mono text-3xl font-bold text-foreground">
-          Clawnews
-        </h1>
+        <h1 className="font-mono text-3xl font-bold text-foreground">Clawnews</h1>
         <p className="mt-2 text-foreground-secondary">
-          Today&apos;s media echo: recent OpenClaw and Moltbook news and docs. Curated; update periodically.
+          Today&apos;s media echo: recent OpenClaw and Moltbook news and docs. Curated; update
+          periodically.
         </p>
       </section>
 
@@ -53,7 +52,7 @@ export default function Clawnews() {
               key={item.url}
               className={cn(
                 "rounded-lg border border-border bg-card p-4",
-                "transition-colors hover:border-primary/50 hover:bg-card-accent/30"
+                "transition-colors hover:border-primary/50 hover:bg-card-accent/30",
               )}
             >
               <a
@@ -64,9 +63,7 @@ export default function Clawnews() {
               >
                 <Newspaper className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-medium text-foreground hover:underline">
-                    {item.title}
-                  </h2>
+                  <h2 className="font-medium text-foreground hover:underline">{item.title}</h2>
                   <p className="mt-1 text-xs text-foreground-tertiary">
                     {item.source} · {item.date}
                   </p>

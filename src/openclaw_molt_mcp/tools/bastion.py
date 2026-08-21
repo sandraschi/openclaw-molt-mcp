@@ -77,13 +77,34 @@ async def clawd_bastion(
     - `status`: Check Bastio API reachability (requires api_key).
 
     **Dialogic returns**: Natural language message plus structured data (backup path, config path, playbook, etc.).
+
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Operation-specific payload:
+      - provision_bastio/validate: `{config_path, backup_path?, bastion_configured?, provider?}`.
+      - provision_trylon/llamafirewall: `{title, steps: [...], config_path, references}`.
+      - status: `{status_code}`.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_bastion(operation="provision_bastio", api_key="k")
+    # {"success": true, "message": "Bastio config merged...", "data": {"config_path": "~/.openclaw/openclaw.json", "backup_path": "...", "env_snippet": "BASTIO_API_KEY=..."}}
+
+    clawd_bastion(operation="validate")
+    # {"success": true, "message": "Bastion configured: bastio", "data": {"config_path": "...", "bastion_configured": true, "provider": "bastio"}}
+    ```
     """
     settings = Settings()
     base = Path(workspace_path) if workspace_path else Path.home() / ".openclaw" / "workspace"
     config_path = _find_config(base)
 
     if operation == "provision_bastio":
-        return _provision_bastio(config_path, api_key, settings)
+        return _provision_bastion(config_path, api_key, settings)
 
     if operation == "provision_trylon":
         return _provision_trylon_playbook(config_path)
@@ -131,7 +152,7 @@ def _provision_bastion(
     bastion_cfg["api_key"] = "${BASTIO_API_KEY}"
 
     gateway["bastion"] = bastion_cfg
-    if not gateway.get("bind") or gateway.get("bind") in ("0.0.0.0", "*"):
+    if not gateway.get("bind") or gateway.get("bind") in ("0.0.0.0", "*"):  # noqa: S104
         gateway["bind"] = "127.0.0.1"
     data["gateway"] = gateway
 

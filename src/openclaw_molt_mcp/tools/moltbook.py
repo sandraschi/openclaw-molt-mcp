@@ -44,6 +44,27 @@ async def clawd_moltbook(
 
     **Dialogic returns**: Natural language message plus structured data.
 
+    ## Return Format
+
+    Returns a dict with:
+    - `success` (bool): Whether the operation completed.
+    - `message` (str): Human-readable summary.
+    - `data` (dict, optional): Feed items, search results, created post/comment, DM inbox, etc.
+    On error, `error` (str) is included and `success` is False.
+
+    ## Examples
+
+    ```
+    clawd_moltbook(operation="feed")
+    # {"success": true, "message": "Feed retrieved.", "data": {"feed": [...]}}
+
+    clawd_moltbook(operation="post", content="Hello from openclaw-molt-mcp")
+    # {"success": true, "message": "Post created.", "data": {"post": {...}}}
+
+    clawd_moltbook(operation="status")
+    # {"success": true, "message": "Moltbook API reachable. Key configured.", "data": {"api": "https://www.moltbook.com/api/v1"}}
+    ```
+
     Requires MOLTBOOK_API_KEY (or OPENCLAW_MOLTBOOK_API_KEY). API base: www.moltbook.com.
     Rate limits: 100 req/min, 1 post/30min, 1 comment/20sec.
     """
