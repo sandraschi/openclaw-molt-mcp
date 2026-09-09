@@ -1,7 +1,7 @@
 # Installation
 
 > **First time?** Complete [docs/ONBOARDING.md](docs/ONBOARDING.md) before expecting
-> live OpenClaw / Moltbook calls — you need the OpenClaw Gateway and a Moltbook API key.
+> live OpenClaw / Moltbook calls - you need the OpenClaw Gateway and a Moltbook API key.
 
 ## 🚀 Quick Start (recommended)
 
@@ -26,7 +26,7 @@ just serve       # start the server
 just web         # start the frontend (if applicable)
 ```
 
-> **Why not `pip install`?** MCP servers bundle webapps, configs, project scaffolding, and tooling that a flat Python package can't deliver. PyPI offers no safety advantage — it doesn't audit packages either. `just` gives you the complete, ready-to-run stack.
+> **Why not `pip install`?** MCP servers bundle webapps, configs, project scaffolding, and tooling that a flat Python package can't deliver. PyPI offers no safety advantage - it doesn't audit packages either. `just` gives you the complete, ready-to-run stack.
 
 ---
 
@@ -63,7 +63,7 @@ If you prefer not to use `just`:
 | Issue | Fix |
 |---|---|
 | `just` not found | Install via `winget install Casey.Just`, `scoop install just`, or `brew install just` |
-| Port conflict | Run `just kill-all` to clear fleet ports (10700–11000) |
+| Port conflict | Run `just kill-all` to clear fleet ports (10700-11000) |
 | Dependencies out of sync | `uv sync --all-extras` |
 | Something else | [Open a GitHub issue](https://github.com/sandraschi/openclaw-molt-mcp/issues) |
 
@@ -261,7 +261,7 @@ For maximum security, run OpenClaw inside a **VirtualBox VM** with Docker. This 
 - ~50 minutes total setup time
 
 **What You Get:**
-- **Double isolation**: Container ÔåÆ VM ÔåÆ Host
+- **Double isolation**: Container -> VM -> Host
 - **Network security**: Host-Only adapter for local access, Tailscale for remote
 - **Easy recovery**: VM snapshots for instant rollback
 - **Peace of mind**: Agent cannot access your host filesystem
